@@ -1,10 +1,7 @@
 //#include "PartitionedHashJoin.h"
-#include <iostream>
 #include "Partition.h"
 
 using namespace std;
-
-
 
 int main(void){
 
@@ -20,7 +17,7 @@ int main(void){
   }
 
   Partition* part = new Partition(relR);
-  part->CreateHistogram(relR);
+  part->CreatePrefixSum(part->CreateHistogram(relR));
 
 //  PartitionedHashJoin* PHJ = new PartitionedHashJoin(relR, relS);
 //  Result result = PHJ.Solve();

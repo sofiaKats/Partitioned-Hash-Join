@@ -1,3 +1,8 @@
+#include <iostream>
+#include <cstdint>
+
+using namespace std;
+
 typedef struct Tuple {
   int32_t key;
   int32_t payload;
@@ -21,9 +26,11 @@ typedef struct Result {
 } Result;
 
 typedef struct Hist{
+  uint32_t length;
   int* arr;
 } Hist;
 
 typedef struct PrefixSum{
-  int* prefixSum;
+  uint32_t length;
+  int** arr;
 } PrefixSum;
