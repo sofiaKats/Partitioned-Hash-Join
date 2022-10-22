@@ -1,4 +1,4 @@
-OBJS = Main.o Partition.o
+OBJS = Main.o Partition.o PartitionedHashJoin.o
 EXEC = program
 
 $(EXEC): $(OBJS)
@@ -11,9 +11,10 @@ Main.o: Main.cpp
 Partition.o: Partition.cpp
 	g++ -c Partition.cpp
 
+PartitionedHashJoin.o: PartitionedHashJoin.cpp
+	g++ -c PartitionedHashJoin.cpp
+
 run:
 	./program
 clean:
-	rm -rf ./program
-	rm -rf ./Main.o
-	rm -rf ./Partition.o
+	rm -rf ./program *.o

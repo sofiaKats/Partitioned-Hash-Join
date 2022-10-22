@@ -1,7 +1,9 @@
 #include "Partition.h"
 #include "math.h"
 
-Partition::Partition(Relation* rel){
+Partition::Partition(Relation* rel, int n){
+  this->n = n;
+  this->rel = rel;
   cout << "partition class"<<endl;
 }
 
@@ -10,23 +12,45 @@ int Partition::Hash(int key, int n){
   return tmp >> (32-n);
 }
 
-Relation* Partition::BuildPartitionedTable(Relation* rel){
-  //CreatePrefixSum(CreateHistogram(rel));
-  return NULL;
+PrefixSum* Partition::GetPrefixSum(){
+  return prefixSum;
 }
 
-Hist* Partition::CreateHistogram(Relation* rel){
+Relation* Partition::BuildPartitionedTable(){
+  PrefixSum* prefixSum = CreatePrefixSum(CreateHistogram());
+  Relation* partRel = new Relation();
+  partRel->num_tuples = rel->num_tuples;
+  partRel->tuples = new Tuple[partRel->num_tuples];
+
+  for (int i = 0; i < rel->num_tuples; i++){
+    int hash = Hash(rel->tuples[i].payload, n);
+    int index;
+
+    for (int j = 0; j < prefixSum->length; j++){
+      if (prefixSum->arr[j][0] == hash){
+        index = prefixSum->arr[j][1];
+        break;
+      }
+    }
+
+    for (; partRel->tuples[index].payload != 0; index++); //find empty bucket
+    partRel->tuples[index].key = rel->tuples[i].key;
+    partRel->tuples[index].payload = rel->tuples[i].payload;
+  }
+  return partRel;
+}
+
+Hist* Partition::CreateHistogram(){
   Hist* hist = new Hist();
   int length = rel->num_tuples;
-  int n = 1; //temporary
   int histLength = pow(2,n);
 
   hist->length = histLength;
   hist->arr = new int[histLength];
 
   //initialisation
-  for (int i = 0; i < length; i++){
-    hist->arr[i]=0;
+  for (int i = 0; i < histLength; i++){
+    hist->arr[i] = 0;
   }
 
   for (int i = 0; i < length; i++){
@@ -74,5 +98,6 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
     cout << prefixSum->arr[i][0] << " : " << prefixSum->arr[i][1]<<endl;
   }
 
+  this->prefixSum = prefixSum;
   return prefixSum;
 }

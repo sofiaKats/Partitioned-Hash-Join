@@ -1,11 +1,12 @@
-#include "Structures.h"
+#include "Partition.h"
 
 
 class PartitionedHashJoin {
 private:
+  int n; //for number of lsb for hashings
   Relation* relR;
   Relation* relS;
 public:
-  PartitionedHashJoin();
-  Solve();
+  PartitionedHashJoin(Relation*, Relation*);
+  Relation* Solve();
 };

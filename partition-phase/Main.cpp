@@ -1,12 +1,12 @@
 //#include "PartitionedHashJoin.h"
-#include "Partition.h"
+#include "PartitionedHashJoin.h"
 
 using namespace std;
 
 int main(void){
 
   Relation* relR = new Relation();
-  relR->num_tuples = 6;
+  relR->num_tuples = 100;
   int length = relR->num_tuples;
   relR->tuples = new Tuple[length];
 
@@ -16,8 +16,12 @@ int main(void){
     //cout << relR->tuples[i].key<< endl;
   }
 
-  Partition* part = new Partition(relR);
-  part->CreatePrefixSum(part->CreateHistogram(relR));
+  PartitionedHashJoin* phj = new PartitionedHashJoin(relR, NULL);
+  Relation* partRel = phj->Solve();
+
+  for (int i = 0 ; i < partRel->num_tuples; i++){
+    cout << partRel->tuples[i].payload << endl;
+  }
 
 //  PartitionedHashJoin* PHJ = new PartitionedHashJoin(relR, relS);
 //  Result result = PHJ.Solve();

@@ -17,14 +17,6 @@ typedef struct Relation {
   uint32_t num_tuples;
 } Relation;
 
-/**
-* Type definition for a relation.
-* It consists of an array of tuples and a size of the relation.
-*/
-typedef struct Result {
-
-} Result;
-
 typedef struct Hist{
   uint32_t length;
   int* arr;
