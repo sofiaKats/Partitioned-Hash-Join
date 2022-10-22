@@ -1,14 +1,15 @@
 #include <iostream>
+#include <cstdlib>
 #include <cstring>
 #include "hopscotch.h"
 using namespace std;
 
-index::index(const int value, const int H) : value(value)
+Index::Index(const int value, const int H) : value(value)
 {
     bitmap = new int[H];
 }
 
-index::~index()
+Index::~Index()
 {
     delete [] bitmap;
 }
