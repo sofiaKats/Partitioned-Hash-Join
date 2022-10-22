@@ -4,9 +4,12 @@
 class PartitionedHashJoin {
 private:
   int n; //for number of lsb for hashings
+  int passesNum;
   Relation* relR;
   Relation* relS;
 public:
   PartitionedHashJoin(Relation*, Relation*);
-  Relation* Solve();
+  Part* Solve();
+  Part* PartitionRec(Part*, int);
+  int Merge(Part*, Part*, int, int);
 };

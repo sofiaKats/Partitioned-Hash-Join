@@ -6,7 +6,7 @@ using namespace std;
 int main(void){
 
   Relation* relR = new Relation();
-  relR->num_tuples = 100;
+  relR->num_tuples = 6;
   int length = relR->num_tuples;
   relR->tuples = new Tuple[length];
 
@@ -17,10 +17,10 @@ int main(void){
   }
 
   PartitionedHashJoin* phj = new PartitionedHashJoin(relR, NULL);
-  Relation* partRel = phj->Solve();
+  Part* partRel = phj->Solve();
 
-  for (int i = 0 ; i < partRel->num_tuples; i++){
-    cout << partRel->tuples[i].payload << endl;
+  for (int i = 0 ; i < partRel->rel->num_tuples; i++){
+    cout << partRel->rel->tuples[i].payload << endl;
   }
 
 //  PartitionedHashJoin* PHJ = new PartitionedHashJoin(relR, relS);

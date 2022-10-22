@@ -1,9 +1,11 @@
 #include "Structures.h"
-
+#include "math.h"
 
 class Partition {
 private:
   int n; //for number of lsb for hashing
+  int startIndex;
+  int endIndex;
   int Hash(int32_t, int);
   PrefixSum* prefixSum;
   Relation* rel;
@@ -14,4 +16,5 @@ public:
   Hist* CreateHistogram();
   PrefixSum* CreatePrefixSum(Hist*);
   PrefixSum* GetPrefixSum();
+  uint32_t getLargestTableSize();
 };

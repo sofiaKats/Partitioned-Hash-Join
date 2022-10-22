@@ -1,9 +1,10 @@
 #include "Partition.h"
-#include "math.h"
 
-Partition::Partition(Relation* rel, int n){
+Partition::Partition(Relation* rel, int n, int startIndex, int endIndex){
   this->n = n;
   this->rel = rel;
+  this->startIndex = startIndex;
+  this->endIndex = endIndex;
   cout << "partition class"<<endl;
 }
 
@@ -100,4 +101,8 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
 
   this->prefixSum = prefixSum;
   return prefixSum;
+}
+
+uint32_t Partition::getLargestTableSize(){
+  return 4;// to be fixed
 }

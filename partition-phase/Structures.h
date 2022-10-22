@@ -26,3 +26,8 @@ typedef struct PrefixSum{
   uint32_t length;
   int** arr;
 } PrefixSum;
+
+typedef struct Part{
+  Relation* rel;
+  PrefixSum* prefixSum;
+} Part;
