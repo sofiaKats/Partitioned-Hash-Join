@@ -1,19 +1,10 @@
-OBJS = Main.o Partition.o PartitionedHashJoin.o
 EXEC = program
+OBJS = Main.o Partition.o PartitionedHashJoin.o
 
 $(EXEC): $(OBJS)
-	g++ -o $(EXEC) $(OBJS)
+	g++ $(OBJS) -o $(EXEC)
 	make run
-
-Main.o: Main.cpp
-	g++ -c Main.cpp
-
-Partition.o: Partition.cpp
-	g++ -c Partition.cpp
-
-PartitionedHashJoin.o: PartitionedHashJoin.cpp
-	g++ -c PartitionedHashJoin.cpp
-
+	
 run:
 	./program
 clean:
