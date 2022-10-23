@@ -20,11 +20,25 @@ typedef struct Relation {
 typedef struct Hist{
   uint32_t length;
   int* arr;
+
+  Hist(int size){
+    arr = new int[size];
+    length = size;
+  }
 } Hist;
 
 typedef struct PrefixSum{
   uint32_t length;
   int** arr;
+
+  PrefixSum(int size){
+    arr = new int*[size];
+    length = size;
+
+    for (int i = 0; i < length; i++){
+      arr[i] = new int[2];
+    }
+  }
 } PrefixSum;
 
 typedef struct Part{

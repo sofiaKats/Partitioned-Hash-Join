@@ -10,6 +10,6 @@ private:
 public:
   PartitionedHashJoin(Relation*, Relation*);
   Part* Solve();
-  Part* PartitionRec(Part*, int);
+  Part* PartitionRec(Part*);
   int Merge(Part*, Part*, int, int);
 };

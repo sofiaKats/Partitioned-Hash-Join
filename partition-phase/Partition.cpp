@@ -1,11 +1,8 @@
 #include "Partition.h"
 
-Partition::Partition(Relation* rel, int n, int startIndex, int endIndex){
+Partition::Partition(Relation* rel, int n){
   this->n = n;
   this->rel = rel;
-  this->startIndex = startIndex;
-  this->endIndex = endIndex;
-  cout << "partition class"<<endl;
 }
 
 int Partition::Hash(int key, int n){
@@ -42,12 +39,9 @@ Relation* Partition::BuildPartitionedTable(){
 }
 
 Hist* Partition::CreateHistogram(){
-  Hist* hist = new Hist();
-  int length = rel->num_tuples;
   int histLength = pow(2,n);
-
-  hist->length = histLength;
-  hist->arr = new int[histLength];
+  int length = rel->num_tuples;
+  Hist* hist = new Hist(histLength);
 
   //initialisation
   for (int i = 0; i < histLength; i++){
@@ -59,6 +53,7 @@ Hist* Partition::CreateHistogram(){
     hist->arr[index]++;
   }
 
+  cout << "HISTOGRAM \n";
   for (int i = 0; i < histLength; i++){
     cout << i << " : " << hist->arr[i]<<endl;
   }
@@ -70,18 +65,15 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   int psum = 0;
   int pIndex = 0;
   int counter = 0; //counting hist length(prefix length)
-  PrefixSum* prefixSum = new PrefixSum();
+  PrefixSum* prefixSum;
 
   for (int i = 0; i < hist->length; i++){ //count hist length
-    if (hist->arr[i] == 0) continue;
-    else counter++;
+    if (hist->arr[i] == 0)
+      continue;
+    counter++;
   }
-  prefixSum->length = counter+1;
-  prefixSum->arr = new int*[prefixSum->length];
 
-  for (int i = 0; i < prefixSum->length; i++){
-    prefixSum->arr[i] = new int[2];
-  }
+  prefixSum = new PrefixSum(counter + 1);
 
   for (int i = 0; i < hist->length; i++){
     if (hist->arr[i] == 0) continue;
@@ -103,6 +95,6 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   return prefixSum;
 }
 
-uint32_t Partition::getLargestTableSize(){
+uint32_t Partition::GetLargestTableSize(){
   return 4;// to be fixed
 }
