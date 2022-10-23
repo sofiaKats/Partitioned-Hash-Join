@@ -57,7 +57,7 @@ Part* PartitionedHashJoin::PartitionRec(Part* part){
     breakPart->rel->num_tuples = length;
 
     for (int j = 0; j < length; j++){
-      breakPart->rel[j] = part->rel[j];
+      breakPart->rel->tuples[j] = part->rel->tuples[j];
     }
 
     partArr[i] = PartitionRec(breakPart);
