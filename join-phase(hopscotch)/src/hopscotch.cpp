@@ -16,13 +16,17 @@ Index::~Index()
     delete [] bitmap;
 }
 
-void Index::set_bitmap_index_to_1(const int index) {
-    bitmap[index] = 1;
-}
+void Index::set_bitmap_index_to_1(const int index) { bitmap[index] = 1;}
 
-void Index::set_bitmap_index_to_0(const int index) {
-    bitmap[index] = 0;
-}
+void Index::set_bitmap_index_to_0(const int index) { bitmap[index] = 0; }
+
+bool Index::get_has_value(void) { return has_value; }
+
+void Index::set_has_value(bool flag) { has_value = flag;}
+
+void Index::set_value(const int val) { value = val; }
+
+int  Index::get_value(void) { return value;}
 
 void Index::print_bitmap(void) {
     for(int i=0; i<H; i++) cout << bitmap[i] ;
@@ -36,20 +40,11 @@ bool Index::is_bitmap_full(const int index) {
     return true;
 }
 
-bool Index::get_has_value(void) { return has_value; }
-
-void Index::set_has_value(bool flag) { has_value = flag;}
-
-
 void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size) {
-    // hashtable[0]->set_bitmap_index_to_1(0);
-    // hashtable[0]->print_bitmap();
-    // cout << endl;
-    // for(int i=0; i<8; i++) cout << "value: " << mock_data[i][0] << " hash: " << mock_data[i][1] << endl;
-
     // for every number in the mock_data array
     for (int counter=0; counter<8; counter++) {
-        int i = mock_data[counter][1]; //store pseudo hash value of number
+        int x = mock_data[counter][0]; // store value of mock data
+        int i = mock_data[counter][1]; // store pseudo hash value of number
 
         // if(hashtable[i].is_bitmap_full()) tote rehashing
 
@@ -60,7 +55,12 @@ void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size) {
         // if(j==-1) tote o pinakas gematos, rehashing
 
         while( ((j-i) % table_size) >= H ) {
-
+            
+            for(int bucket=j-1; bucket>=(j-(H-1)); --bucket) {
+                int y = hashtable[bucket]->get_value();
+            }
         }
+
+        hashtable[j]->set_value(x);
     }
 }
