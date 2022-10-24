@@ -16,6 +16,7 @@ public:
     ~Index();
     void set_bitmap_index_to_1(const int index); 
     void set_bitmap_index_to_0(const int index); 
+    int  get_bitmap_index(const int index);
     void print_bitmap(void);
     bool get_has_value(void);
     void set_has_value(bool flag);

@@ -20,6 +20,8 @@ void Index::set_bitmap_index_to_1(const int index) { bitmap[index] = 1;}
 
 void Index::set_bitmap_index_to_0(const int index) { bitmap[index] = 0; }
 
+int Index::get_bitmap_index(const int index) { return bitmap[index]; }
+
 bool Index::get_has_value(void) { return has_value; }
 
 void Index::set_has_value(bool flag) { has_value = flag;}
@@ -58,6 +60,22 @@ void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size) {
             
             for(int bucket=j-1; bucket>=(j-(H-1)); --bucket) {
                 int y = hashtable[bucket]->get_value();
+                //checking each neighboring bucket's bitmap to find y's original hash value (k)
+                int k=-1, position=bucket; 
+                int loop_counter=0;
+                do {
+                    if(hashtable[position]->get_bitmap_index(loop_counter) == 1) k = position;
+                    --position;
+                    ++loop_counter;
+                } while(k!=-1 || position<(bucket-(H-1)));
+
+                // if(k == -1) array is full
+                if(k != -1) {
+                    if(((j - k) % table_size) < H) {
+
+                    }
+                    //else array extention ??
+                }
             }
         }
 
