@@ -44,7 +44,6 @@ void Index::set_has_value(bool flag) { has_value = flag;}
 void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size) {
     // hashtable[0]->set_bitmap_index_to_1(0);
     // hashtable[0]->print_bitmap();
-
     // cout << endl;
     // for(int i=0; i<8; i++) cout << "value: " << mock_data[i][0] << " hash: " << mock_data[i][1] << endl;
 
@@ -52,11 +51,16 @@ void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size) {
     for (int counter=0; counter<8; counter++) {
         int i = mock_data[counter][1]; //store pseudo hash value of number
 
-        // if(hashtable[i].is_bitmap_full) tote rehashing
+        // if(hashtable[i].is_bitmap_full()) tote rehashing
 
-        for(int serial=i; serial<table_size; serial++)
-            if(hashtable[0]->get_has_value()) {
-                
-            }
+        int j=-1; // linear search of array for empty space
+        for(int bucket=i; bucket<table_size; bucket++)
+            if(hashtable[bucket]->get_has_value() == false) j = bucket;
+
+        // if(j==-1) tote o pinakas gematos, rehashing
+
+        while( ((j-i) % table_size) >= H ) {
+
+        }
     }
 }
