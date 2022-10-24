@@ -37,6 +37,7 @@ int main(int argc, char* argv[]) {
 
 
         hopscotch_hatching(hashtable, mock_data, table_size);
+        print_hashtable(hashtable, table_size);
 
         // free hashtable memory
         for (int i=0; i<table_size; i++) delete hashtable[i];

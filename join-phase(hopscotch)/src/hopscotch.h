@@ -29,3 +29,6 @@ public:
 // given an empty hashtable and an array of data
 // perform hopscotch hashing
 void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size);
+
+//prints entire hashtable for debugging
+void print_hashtable(Index** hashtable, int table_size);
