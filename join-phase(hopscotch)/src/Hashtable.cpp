@@ -18,9 +18,38 @@ void Hashtable::print_hashtable() {
     
     cout << endl << "\n Corresponding bitmaps: " << endl;
     for(int bucket=0; bucket<table_size; bucket++) {
-        cout << "BUCKET " << bucket << ":  " ;
+        cout << "BUCKET " << bucket << " with value:  " <<  hashtable[bucket]->get_value() << " :\n";
         for (int bit=0; bit< H ; bit++)  cout << "  " << hashtable[bucket]->get_bitmap_index(bit);
         cout << endl;
+    }
+}
+
+// HAVE TO CHANGE J AND K INITIAL VALUE, COULD BE -1 SOMETIMES
+int Hashtable::find_empty_index(int i){
+    int j=-1; // linear search of array for empty space
+    for(int bucket=i; bucket<table_size; bucket++)
+    {
+        cout << "2" << endl;
+        if(hashtable[bucket]->get_has_value() == false){
+            j = bucket;
+            break;
+        }
+    }
+    return j;
+}
+
+void Hashtable::add_value(int pos, int value, int hash_value){
+    hashtable[pos]->set_value(value);
+    hashtable[pos]->set_has_value(true);
+
+    //update bitmaps
+    int loop = 0;
+    for (int i = pos; ((i > pos- H) && (i>-1)); i--){
+        if (hash_value == i) {
+            hashtable[i]->set_bitmap_index_to_1(loop);
+        }
+        else hashtable[i]->set_bitmap_index_to_0(loop);
+        loop++;
     }
 }
 
@@ -30,18 +59,10 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
         int x = mock_data[counter][0]; // store value of mock data
         int i = mock_data[counter][1]; // store pseudo hash value of number
         cout << "1. New element to be inserted is: " << x << endl;
-        // if(hashtable[i].is_bitmap_full()) tote rehashing
+        //1. if(hashtable[i].is_bitmap_full()) tote rehashing
 
-        // HAVE TO CHANGE J AND K INITIAL VALUE, COULD BE -1 SOMETIMES
-        int j=-1; // linear search of array for empty space
-        for(int bucket=i; bucket<table_size; bucket++)
-        {
-            cout << "2" << endl;
-            if(hashtable[bucket]->get_has_value() == false){
-                j = bucket;
-                break;
-            }
-        }
+        //2. LINEAR SEARCH FPR EMPTY INDEX 
+        int j = find_empty_index(i);
         
         // if(j==-1) tote o pinakas gematos, rehashing
         if(j==-1) {cout << "j is -1." << endl; break;}
@@ -71,12 +92,11 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
                     ++loop_counter;
                 } while(k!=-1 || position<(bucket-(H-1)));
 
-                cout << "2 POSITION IS " << position << " and value is " << hashtable[position]->get_value() << endl;
-
                 
                 // if(k == -1) array is full
                 if(k != -1) {
                     if(((j - k) % table_size) < H) {
+                        /*
                         cout << "7" << endl;
                         hashtable[j]->set_value(y);
                         hashtable[j]->set_has_value(true);
@@ -85,28 +105,15 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
                         //update bitmaps of neighbor
                         hashtable[k]->set_bitmap_index_to_1(loop_counter);
                         hashtable[k]->set_bitmap_index_to_0(--loop_counter);
+                        */
+                       add_value(j, x, i);
+                       j = k;
                     }
                     //else array extention ??
                 }
             }           
         }
-        // //TRYING
-        // if(k != -1) {
-        //     if(((j - k) % table_size) < H) {
-        //         cout << "7" << endl;
-        //         hashtable[j]->set_value(y);
-        //         hashtable[j]->set_has_value(true);
-        //         j=k-1;
-        //         hashtable[j]->set_has_value(false);
-        //         //update bitmaps of neighbor
-        //         hashtable[k]->set_bitmap_index_to_1(loop_counter);
-        //         hashtable[k]->set_bitmap_index_to_0(--loop_counter);
-        //     }
-        //     //else array extention ??
-        // }
-
-        hashtable[j]->set_value(x);
-        hashtable[j]->set_has_value(true);
+        add_value(j, x, i);
         cout << "8" << endl;
     }
 }
