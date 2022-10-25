@@ -7,6 +7,6 @@ $(EXEC): $(OBJS)
 	make run
 
 run:
-	./program
+	./$(EXEC)
 clean:
-	rm -rf ./program *.o
+	rm -rf ./$(EXEC) *.o

@@ -1,68 +1,77 @@
 #include "PartitionedHashJoin.h"
 
+#define MAX_PASSES 2
+
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
   this->relR = relR;
   this->relS = relS;
-  n = 0;
-  passesNum = 0;
 }
 
 Part* PartitionedHashJoin::Solve(){
   Part* part = new Part();
-  part->rel = relR;
-  Part* partitionedRelR = PartitionRec(part);
-  //Relation* partitionedRelS = PartitionRec(relS);
+  Part* partitionedR = new Part();
+  partitionedR->rel = new Relation();
+  partitionedR->rel->tuples = new Tuple[relR->num_tuples];
+  partitionedR->rel->num_tuples = relR->num_tuples;
 
-  return partitionedRelR;
+  PartitionRec(partitionedR, relR);
+
+  return partitionedR;
 }
 
- int PartitionedHashJoin::Merge(Part* destPart, Part* part, int startIndex, int startPsIndex){
+ void PartitionedHashJoin::Merge(Part* destPart, Part* part){
    int partIndex = 0;
-   for (int i = startIndex; i < part->rel->num_tuples; i++){
-     destPart->rel[i] = part->rel[partIndex++];
+   int relIndex = 0;
+   int pSIndex = 0;
+
+   //Get starting indexes, to be changed...
+   for (; destPart->rel->tuples[relIndex].key != 0; relIndex++);
+
+   //for (; part->prefixSum->arr[pSIndex][0] != 0; pSIndex++);
+
+   cout << "Relation Index: " << relIndex << endl;
+   cout << "pSum Index: " << pSIndex << endl;
+
+   for (int i = relIndex; i < relIndex + part->rel->num_tuples; i++){
+     destPart->rel->tuples[i] = part->rel->tuples[partIndex++];
    }
 
-   partIndex = 0;
-   for (int i = startPsIndex; i < part->prefixSum->length; i++){
+   /*partIndex = 0;
+   for (int i = pSIndex; i < part->prefixSum->length; i++){
      destPart->prefixSum[i] = part->prefixSum[partIndex++];
-   }
-
-   return startPsIndex;
+   }*/
 }
 
-Part* PartitionedHashJoin::PartitionRec(Part* part){
-  if (passesNum >= 2) {
-    return part;
-  }
+void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passNum, int n){
+  passNum++;
   n++;
-  passesNum++;
-  int startPsIndex = 0;
-  Part** partArr;
-  Part* finalPart = new Part();
-  cout << "\n------- PASS NO: " << n << " -------\n\n";
 
-  Partition* partitionR = new Partition(part->rel, n);
+  cout << "\n------- PASS NO: " << passNum << " -------\n\n";
 
-  Relation* partitionedRelR = partitionR->BuildPartitionedTable();
-  PrefixSum* prefixSum = partitionR->GetPrefixSum();
-  partArr = new Part*[prefixSum->length-1];
+  Partition* partition = new Partition(rel, n);
 
-  for (int i = 0; i < prefixSum->length - 1; i++){
-    //cout << "PREFIX ARRAY VALUE : " << prefixSum->arr[i+1][1] - prefixSum->arr[i][1] << endl;
+  Part* part = new Part();
+  part->rel = partition->BuildPartitionedTable();
+  part->prefixSum = partition->GetPrefixSum();
 
-    Part* breakPart = new Part();
-    breakPart->rel = new Relation();
-    int length = prefixSum->arr[i+1][1] - prefixSum->arr[i][1];
-    breakPart->rel->tuples = new Tuple[length];
-    breakPart->rel->num_tuples = length;
+  if (passNum == MAX_PASSES){
+    //Merge Relation and PrefixSum table to finalPart tables
+    Merge(finalPart, part);
+    return;
+  }
+
+  for (int i = 0; i < part->prefixSum->length - 1; i++){
+    //Create table for each relation sub-table, to be changed...
+    Relation* breakRel = new Relation();
+    int length = part->prefixSum->arr[i+1][1] - part->prefixSum->arr[i][1];
+    int startIndex = part->prefixSum->arr[i][1];
+    breakRel->tuples = new Tuple[length];
+    breakRel->num_tuples = length;
 
     for (int j = 0; j < length; j++){
-      breakPart->rel->tuples[j] = part->rel->tuples[j];
+      breakRel->tuples[j] = part->rel->tuples[j + startIndex];
     }
 
-    partArr[i] = PartitionRec(breakPart);
-
-    //startPsIndex = Merge(finalPart, partArr[i], startIndex, startPsIndex);
+    PartitionRec(finalPart, breakRel, passNum, n);
   }
-  return finalPart;
 }
