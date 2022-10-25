@@ -4,7 +4,7 @@
 #include <time.h>
 using namespace std;
 
-#include "hopscotch.h"
+#include "Hashtable.h"
 
 // execute program with ./hopscotch table_size
 int main(int argc, char* argv[]) {
@@ -15,9 +15,7 @@ int main(int argc, char* argv[]) {
 
         srand(time(0));
 
-        Index* hashtable[table_size];
-        for (int i=0; i<table_size; i++)
-            hashtable[i] = new Index();
+        Hashtable* htable = new Hashtable(table_size);
 
         // creating mock data to test if the algorithm works.
         // mock_data column 0: holds a random value
@@ -36,11 +34,11 @@ int main(int argc, char* argv[]) {
         mock_data[7][0] = 55; mock_data[7][1] = 2;
 
 
-        hopscotch_hatching(hashtable, mock_data, table_size);
-        print_hashtable(hashtable, table_size);
+        htable->hopscotch_hatching(mock_data);
+        htable->print_hashtable();
 
         // free hashtable memory
-        for (int i=0; i<table_size; i++) delete hashtable[i];
+        //for (int i=0; i<table_size; i++) delete hashtable[i];
         //free mock data memory
         for(int i=0; i<8; i++) delete mock_data[i];
         delete [] mock_data;

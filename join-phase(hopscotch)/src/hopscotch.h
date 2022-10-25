@@ -24,11 +24,3 @@ public:
     int  get_value(void);
     bool is_bitmap_full(const int index); //returns true if full, false if not full
 };
-
-
-// given an empty hashtable and an array of data
-// perform hopscotch hashing
-void hopscotch_hatching(Index** hashtable, int** mock_data, int table_size);
-
-//prints entire hashtable for debugging
-void print_hashtable(Index** hashtable, int table_size);
