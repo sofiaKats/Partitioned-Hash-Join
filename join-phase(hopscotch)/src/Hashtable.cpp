@@ -53,6 +53,20 @@ void Hashtable::add_value(int pos, int value, int hash_value){
     }
 }
 
+void Hashtable::remove_value(int pos, int value, int hash_value ){
+    //update bitmaps
+    int loop = 0;
+    for (int i = pos; ((i > pos- H) && (i>-1)); i--){
+        if (hash_value == i) {
+            hashtable[i]->set_bitmap_index_to_0(loop);
+        }
+        loop++;
+    } 
+    hashtable[pos]->set_value(0);
+    hashtable[pos]->set_has_value(false);  
+
+}
+
 void Hashtable::hopscotch_hatching(int** mock_data) {
     // for every number in the mock_data array
     for (int counter=0; counter<8; counter++) {
@@ -61,7 +75,7 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
         cout << "1. New element to be inserted is: " << x << endl;
         //1. if(hashtable[i].is_bitmap_full()) tote rehashing
 
-        //2. LINEAR SEARCH FPR EMPTY INDEX 
+        //2. LINEAR SEARCH FOR EMPTY INDEX 
         int j = find_empty_index(i);
         
         // if(j==-1) tote o pinakas gematos, rehashing
@@ -70,50 +84,39 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
         cout << "3" << endl;
         while( ((j-i) % table_size) >= H ) {
             cout << "4" << endl;
-            for(int bucket=j-1; bucket>=(j-(H-1)); --bucket) {
+            int k=-1;
+            for (int bucket = j - (H-1); bucket<j; bucket++){
+            //for(int bucket=j-1; bucket>=(j-(H-1)); --bucket) {
                 int y = hashtable[bucket]->get_value();
                 cout << "5" << endl;
                 //checking each neighboring bucket's bitmap to find y's original hash value (k)
                 int k=-1, position=bucket; 
                 int loop_counter=0;
-                do {
-                    cout << "6" << endl;
-                    // starting from the current bucket going backwards in the array we have
-                    // to check the bitmaps to find out the hash value of y.
-                    // when we enter the loop the first time, (loop_counter=0) we have to check
-                    // index=0 of the current bucket's bitmap, when the loop_counter=1 we check 
-                    // the previous bucket's bitmap, specifically index=1 of this bitmap, loop=2 index=2 e.t.c
-                    if(hashtable[position]->get_bitmap_index(loop_counter) == 1) {
-                        cout << "POSITION IS " << position << " and value is " << hashtable[position]->get_value() << endl;
-                        k = position;
-                        break;
-                    }
-                    --position;
-                    ++loop_counter;
-                } while(k!=-1 || position<(bucket-(H-1)));
 
-                
-                // if(k == -1) array is full
-                if(k != -1) {
-                    if(((j - k) % table_size) < H) {
-                        /*
-                        cout << "7" << endl;
-                        hashtable[j]->set_value(y);
-                        hashtable[j]->set_has_value(true);
-                        j=k-1;
-                        hashtable[j]->set_has_value(false);
-                        //update bitmaps of neighbor
-                        hashtable[k]->set_bitmap_index_to_1(loop_counter);
-                        hashtable[k]->set_bitmap_index_to_0(--loop_counter);
-                        */
-                       add_value(j, x, i);
-                       j = k;
+                int pos = bucket;
+                for (int p = 0; p<H; p++){
+                    if(hashtable[pos]->get_bitmap_index(loop_counter) == 1){
+                        k = pos + p;
+                        cout << "POSITION IS " << pos << " and value is " << hashtable[k]->get_value() << endl;
+                        break;                        
                     }
-                    //else array extention ??
+                    loop_counter++;
                 }
-            }           
+
+                if (k!=-1){    
+                    //we move y to j, and making an empty spot !!!!!!! need to have hash value
+                    add_value(j, hashtable[k]->get_value(), 6);
+                    cout << "added\n";
+                    remove_value(k, hashtable[k]->get_value(), 6);
+                    j = k;
+                    cout << "removed!\n";
+                    break;  
+                }
+                else continue;
+            }     
         }
         add_value(j, x, i);
         cout << "8" << endl;
     }
 }
+
