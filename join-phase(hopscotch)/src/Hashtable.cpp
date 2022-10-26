@@ -1,15 +1,26 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include "math.h"
 #include "Hashtable.h"
 using namespace std;
 
-Hashtable::Hashtable(int table_size){
+Hashtable::Hashtable(int table_size, int depth){
     this->table_size = table_size;
+    this->depth = depth;
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
         hashtable[i] = new Index();
+}
+
+int Hashtable::hash_function(int id){
+
+    int i =2;
+    int j =32;
+    int hashed_value = (int) (id*2654435761 % (int)pow(i,j));
+
+    hashed_value = hashed_value >> (32-depth); 
 }
 
 void Hashtable::print_hashtable() {
@@ -85,19 +96,20 @@ void Hashtable::remove_value(int pos, int value, int hash_value ){
     hashtable[pos]->set_has_value(false); 
 }
 
-void Hashtable::hopscotch_hatching(int** mock_data) {
+bool Hashtable::hopscotch_hatching(int** mock_data) {
     // for every number in the mock_data array
-    for (int counter=0; counter<10; counter++) {
+    for (int counter=0; counter<11; counter++) {
         int x = mock_data[counter][0]; // store value of mock data
         int i = mock_data[counter][1]; // store pseudo hash value of number
         cout << "New element to be inserted is: " << x << endl;
-        //1. if(hashtable[i].is_bitmap_full()) tote rehashing
+        //1. Check if bitmap of position i is full, if yes we rehash
+        if(hashtable[i]->is_bitmap_full()) return true;           //THERE COULD BE A BETTER WAY
 
         //2. LINEAR SEARCH FOR EMPTY INDEX 
         int j = find_empty_index(i);
         
-        // if(j==-1) tote o pinakas gematos, rehashing
-        if(j==-1) {cout << "j is -1." << endl; break;}
+        //2.a) If(j==-1) tote o pinakas gematos, rehashing
+        if(j==-1) { cout << "j is -1. That means table is full we need to rehash!" << endl;  return true; }        
 
         cout << "3" << endl;
         //3. While (j−i) mod n ≥ H
@@ -137,5 +149,30 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
         add_value(j, x, i);
         cout << "8" << endl;
     }
+    return false;
 }
 
+void Hashtable::resize(){
+    int new_table_size = table_size*2;
+    depth+=1;
+
+    Index** hashtable_new = new Index*[new_table_size];
+    for (int i=0; i<new_table_size; i++)
+        hashtable_new[i] = new Index();
+
+    for (int i=0; i<table_size; i++) delete hashtable[i];
+    delete [] hashtable;
+
+    this->hashtable = hashtable_new;
+    this->table_size = new_table_size;
+}
+
+void Hashtable::Solve(int** mock_data){
+    bool to_be_resized = hopscotch_hatching(mock_data);
+    if (to_be_resized == true) {
+        resize();
+        cout << "Resized!" << endl;
+        hopscotch_hatching(mock_data);
+    }
+    else cout << "\nAll good!" << endl;
+}

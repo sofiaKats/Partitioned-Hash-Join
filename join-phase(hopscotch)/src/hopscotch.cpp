@@ -36,7 +36,7 @@ void Index::print_bitmap(void) {
 }
 
 //returns true if full, false if not full
-bool Index::is_bitmap_full(const int index) {
+bool Index::is_bitmap_full() {
     for(int i=0; i<H; i++)
         if(bitmap[i] == 0) return false;
     return true;
