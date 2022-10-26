@@ -35,6 +35,20 @@ int Hashtable::find_empty_index(int i){
             break;
         }
     }
+    if (j==-1){
+        //this means that from our point to the end of the table on the right, there are no free spots
+        // but since we treat this hashtable as a cycle, we also check from the start of the table until tehe position i-1
+
+        //COULD BE DONE MORE EFFICIENTLY WITH MOD!
+        for(int bucket=0; bucket<i-1; bucket++)
+        {
+            cout << "2" << endl;
+            if(hashtable[bucket]->get_has_value() == false){
+                j = bucket;
+                break;
+            }
+        }
+    }
     return j;
 }
 
@@ -44,11 +58,11 @@ void Hashtable::add_value(int pos, int value, int hash_value){
 
     //update bitmaps
     int loop = 0;
-    for (int i = pos; ((i > pos- H) && (i>-1)); i--){
+    for (int i = pos; i > pos- H; i--){
         if (hash_value == i) {
-            hashtable[i]->set_bitmap_index_to_1(loop);
+            hashtable[(i+table_size)%table_size]->set_bitmap_index_to_1(loop);
         }
-        else hashtable[i]->set_bitmap_index_to_0(loop);
+        else hashtable[(i+table_size)%table_size]->set_bitmap_index_to_0(loop);
         loop++;
     }
 }
@@ -56,23 +70,22 @@ void Hashtable::add_value(int pos, int value, int hash_value){
 void Hashtable::remove_value(int pos, int value, int hash_value ){
     //update bitmaps
     int loop = 0;
-    for (int i = pos; ((i > pos- H) && (i>-1)); i--){
+    for (int i = pos; i > pos- H; i--){
         if (hash_value == i) {
-            hashtable[i]->set_bitmap_index_to_0(loop);
+            hashtable[(i+table_size)%table_size]->set_bitmap_index_to_0(loop);
         }
         loop++;
     } 
     hashtable[pos]->set_value(0);
-    hashtable[pos]->set_has_value(false);  
-
+    hashtable[pos]->set_has_value(false); 
 }
 
 void Hashtable::hopscotch_hatching(int** mock_data) {
     // for every number in the mock_data array
-    for (int counter=0; counter<8; counter++) {
+    for (int counter=0; counter<10; counter++) {
         int x = mock_data[counter][0]; // store value of mock data
         int i = mock_data[counter][1]; // store pseudo hash value of number
-        cout << "1. New element to be inserted is: " << x << endl;
+        cout << "New element to be inserted is: " << x << endl;
         //1. if(hashtable[i].is_bitmap_full()) tote rehashing
 
         //2. LINEAR SEARCH FOR EMPTY INDEX 
@@ -82,6 +95,7 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
         if(j==-1) {cout << "j is -1." << endl; break;}
 
         cout << "3" << endl;
+        //3. While (j−i) mod n ≥ H
         while( ((j-i) % table_size) >= H ) {
             cout << "4" << endl;
             int k=-1;
@@ -93,10 +107,10 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
                 int k=-1, position=bucket; 
                 int loop_counter=0;
 
-                int pos = bucket;
-                for (int p = 0; p<H; p++){
+                int pos = (bucket + table_size)%table_size;
+                for (int p = 0; p < H; p++){
                     if(hashtable[pos]->get_bitmap_index(loop_counter) == 1){
-                        k = pos + p;
+                        k = (pos + p + table_size)%table_size;
                         cout << "POSITION IS " << pos << " and value is " << hashtable[k]->get_value() << endl;
                         break;                        
                     }
