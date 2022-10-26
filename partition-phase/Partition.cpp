@@ -1,13 +1,19 @@
 #include "Partition.h"
 
-Partition::Partition(Relation* rel, int n){
+Partition::Partition(Relation* rel, int n, int from, int to){
   this->n = n;
-  this->rel = rel;
+  if (to == -1) to = rel->num_tuples;
+
+  this->rel = new Relation(to - from);
+
+  for (int i = 0; i < this->rel->num_tuples; i++){
+    this->rel->tuples[i] = rel->tuples[i + from];
+  }
 }
 
 int Partition::Hash(int key, int n){
-  uint32_t tmp = key << (32-n);
-  return tmp >> (32-n);
+  uint32_t tmp = key << (32 - n);
+  return tmp >> (32 - n);
 }
 
 PrefixSum* Partition::GetPrefixSum(){

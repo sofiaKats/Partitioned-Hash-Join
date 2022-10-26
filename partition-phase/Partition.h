@@ -9,7 +9,7 @@ private:
   Relation* rel;
 
 public:
-  Partition(Relation*, int);
+  Partition(Relation*, int, int = 0, int = -1);
   Relation* BuildPartitionedTable();
   Hist* CreateHistogram();
   PrefixSum* CreatePrefixSum(Hist*);

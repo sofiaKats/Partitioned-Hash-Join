@@ -8,6 +8,6 @@ private:
 public:
   PartitionedHashJoin(Relation*, Relation*);
   Part* Solve();
-  void PartitionRec(Part*, Relation*, int = 0, int = 0);
-  void Merge(Part*, Part*);
+  void PartitionRec(Part*, Relation*, int = 0, int = 0, int = 0, int = -1);
+  void Merge(Part*, Part*, int);
 };
