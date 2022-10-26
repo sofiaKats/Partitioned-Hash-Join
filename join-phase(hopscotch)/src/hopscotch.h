@@ -3,6 +3,7 @@
 using namespace std;
 
 #define H 3 
+#define L2_SIZE 256000
 
 // each index of the hopscoth table has a value and a corresponding bitmap
 class Index
@@ -22,7 +23,7 @@ public:
     void set_has_value(bool flag);
     void set_value(const int val);
     int  get_value(void);
-    bool is_bitmap_full(const int index); //returns true if full, false if not full
+    bool is_bitmap_full(); //returns true if full, false if not full
 };
 
 int temp_find_hash(int, int**);

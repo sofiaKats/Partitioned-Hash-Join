@@ -15,14 +15,14 @@ int main(int argc, char* argv[]) {
 
         srand(time(0));
 
-        Hashtable* htable = new Hashtable(table_size);
+        Hashtable* htable = new Hashtable(table_size, 10); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
 
         // creating mock data to test if the algorithm works.
         // mock_data column 0: holds a random value
         // mock_data column 1: holds hash value i create to test algorithm cases
         // lets assume that table_size=10
-        int** mock_data = new int*[10];
-        for(int i=0; i<10; i++) mock_data[i] = new int[2];
+        int** mock_data = new int*[11];
+        for(int i=0; i<11; i++) mock_data[i] = new int[2];
         //random value within [0,99] , pseudo-hash that i assign
         mock_data[0][0] = 14; mock_data[0][1] = 1;
         mock_data[1][0] = 67; mock_data[1][1] = 1;
@@ -34,9 +34,11 @@ int main(int argc, char* argv[]) {
         mock_data[7][0] = 55; mock_data[7][1] = 2;
         mock_data[8][0] = 40; mock_data[8][1] = 9;
         mock_data[9][0] = 46; mock_data[9][1] = 9;
+        mock_data[10][0] = 16; mock_data[10][1] = 9;
 
 
-        htable->hopscotch_hatching(mock_data);
+        //htable->hopscotch_hatching(mock_data);
+        htable->Solve(mock_data);
         htable->print_hashtable();
 
         // free hashtable memory
