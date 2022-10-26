@@ -57,12 +57,15 @@ void Hashtable::add_value(int pos, int value, int hash_value){
     hashtable[pos]->set_has_value(true);
 
     //update bitmaps
+    int indx;
     int loop = 0;
     for (int i = pos; i > pos- H; i--){
-        if (hash_value == i) {
-            hashtable[(i+table_size)%table_size]->set_bitmap_index_to_1(loop);
+        indx = (i+table_size) %table_size;
+        if (hash_value == indx) {
+            if (value == 46) cout << "Pos is " << i << endl;
+            hashtable[indx]->set_bitmap_index_to_1(loop);
         }
-        else hashtable[(i+table_size)%table_size]->set_bitmap_index_to_0(loop);
+        else hashtable[indx]->set_bitmap_index_to_0(loop);
         loop++;
     }
 }
@@ -70,9 +73,11 @@ void Hashtable::add_value(int pos, int value, int hash_value){
 void Hashtable::remove_value(int pos, int value, int hash_value ){
     //update bitmaps
     int loop = 0;
+    int indx;
     for (int i = pos; i > pos- H; i--){
-        if (hash_value == i) {
-            hashtable[(i+table_size)%table_size]->set_bitmap_index_to_0(loop);
+        indx = (i+table_size) %table_size;
+        if (hash_value == indx) {
+            hashtable[indx]->set_bitmap_index_to_0(loop);
         }
         loop++;
     } 
@@ -118,10 +123,10 @@ void Hashtable::hopscotch_hatching(int** mock_data) {
                 }
 
                 if (k!=-1){    
-                    //we move y to j, and making an empty spot !!!!!!! need to have hash value
-                    add_value(j, hashtable[k]->get_value(), 6);
+                    //we move y to j, and making an empty spot !!
+                    add_value(j, hashtable[k]->get_value(), temp_find_hash(hashtable[k]->get_value(), mock_data));
                     cout << "added\n";
-                    remove_value(k, hashtable[k]->get_value(), 6);
+                    remove_value(k, hashtable[k]->get_value(), temp_find_hash(hashtable[k]->get_value(), mock_data));
                     j = k;
                     cout << "removed!\n";
                     break;  

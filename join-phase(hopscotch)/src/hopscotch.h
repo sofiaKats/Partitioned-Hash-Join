@@ -24,3 +24,5 @@ public:
     int  get_value(void);
     bool is_bitmap_full(const int index); //returns true if full, false if not full
 };
+
+int temp_find_hash(int, int**);

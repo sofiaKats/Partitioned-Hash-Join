@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
         mock_data[6][0] = 23; mock_data[6][1] = 6;
         mock_data[7][0] = 55; mock_data[7][1] = 2;
         mock_data[8][0] = 40; mock_data[8][1] = 9;
-        mock_data[9][0] = 46; mock_data[8][1] = 9;
+        mock_data[9][0] = 46; mock_data[9][1] = 9;
 
 
         htable->hopscotch_hatching(mock_data);
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         // free hashtable memory
         //for (int i=0; i<table_size; i++) delete hashtable[i];
         //free mock data memory
-        for(int i=0; i<8; i++) delete mock_data[i];
+        for(int i=0; i<10; i++) delete mock_data[i];
         delete [] mock_data;
     }
 
