@@ -11,7 +11,7 @@ Part* PartitionedHashJoin::Solve(){
   Part* part = new Part();
   Part* partitionedR = new Part();
   partitionedR->rel = new Relation(relR->num_tuples);
-  partitionedR->prefixSum = new PrefixSum(pow(2,3));
+  partitionedR->prefixSum = new PrefixSum(pow(2,2) + 1);
 
   PartitionRec(partitionedR, relR);
 
@@ -33,10 +33,11 @@ Part* PartitionedHashJoin::Solve(){
    for (index = 1; destPart->prefixSum->arr[index][1] != 0; index++);
    if (index == 1) index = 0; // if second element's start index is 0 then first is as well.
    else{
+     index--;
      base = destPart->prefixSum->arr[index][1];
    }
    partIndex = 0;
-   for (int i = index; i < index + part->prefixSum->length-1; i++){
+   for (int i = index; i < index + part->prefixSum->length; i++){
      destPart->prefixSum->arr[i][0] = part->prefixSum->arr[partIndex][0];
      destPart->prefixSum->arr[i][1] = part->prefixSum->arr[partIndex++][1] + base;
    }
