@@ -2,13 +2,9 @@
 
 Partition::Partition(Relation* rel, int n, int from, int to){
   this->n = n;
-  if (to == -1) to = rel->num_tuples;
-
-  this->rel = new Relation(to - from);
-
-  for (int i = 0; i < this->rel->num_tuples; i++){
-    this->rel->tuples[i] = rel->tuples[i + from];
-  }
+  this->rel = rel;
+  this->startIndex = from;
+  this->endIndex = to == -1 ? rel->num_tuples : to;
 }
 
 int Partition::Hash(int key, int n){
@@ -22,9 +18,9 @@ PrefixSum* Partition::GetPrefixSum(){
 
 Relation* Partition::BuildPartitionedTable(){
   PrefixSum* prefixSum = CreatePrefixSum(CreateHistogram());
-  Relation* partRel = new Relation(rel->num_tuples);
+  Relation* partRel = new Relation(endIndex - startIndex);
 
-  for (int i = 0; i < rel->num_tuples; i++){
+  for (int i = startIndex; i < endIndex; i++){
     int hash = Hash(rel->tuples[i].payload, n);
     int index;
 
@@ -44,7 +40,6 @@ Relation* Partition::BuildPartitionedTable(){
 
 Hist* Partition::CreateHistogram(){
   int histLength = pow(2,n);
-  int length = rel->num_tuples;
   Hist* hist = new Hist(histLength);
 
   //initialisation
@@ -52,7 +47,7 @@ Hist* Partition::CreateHistogram(){
     hist->arr[i] = 0;
   }
 
-  for (int i = 0; i < length; i++){
+  for (int i = startIndex; i < endIndex; i++){
     int index = Hash(rel->tuples[i].payload, n);
     hist->arr[index]++;
   }
@@ -80,7 +75,8 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   prefixSum = new PrefixSum(counter + 1);
 
   for (int i = 0; i < hist->length; i++){
-    if (hist->arr[i] == 0) continue;
+    if (hist->arr[i] == 0)
+      continue;
 
     prefixSum->arr[pIndex][0] = i;
     prefixSum->arr[pIndex][1] = psum;
@@ -90,7 +86,7 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   prefixSum->arr[pIndex][0] = -1;
   prefixSum->arr[pIndex][1] = psum;
 
-  cout <<"PREFIX SUM"<<endl;
+  cout << "PREFIX SUM" << endl;
   for (int i = 0; i < prefixSum->length; i++){
     cout << prefixSum->arr[i][0] << " : " << prefixSum->arr[i][1]<<endl;
   }
