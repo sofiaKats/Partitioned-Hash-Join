@@ -15,6 +15,11 @@ typedef struct Tuple {
 typedef struct Relation {
   Tuple* tuples;
   uint32_t num_tuples;
+
+  Relation(int size){
+    tuples = new Tuple[size];
+    num_tuples = size;
+  }
 } Relation;
 
 typedef struct Hist{

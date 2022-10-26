@@ -10,9 +10,8 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 Part* PartitionedHashJoin::Solve(){
   Part* part = new Part();
   Part* partitionedR = new Part();
-  partitionedR->rel = new Relation();
-  partitionedR->rel->tuples = new Tuple[relR->num_tuples];
-  partitionedR->rel->num_tuples = relR->num_tuples;
+  partitionedR->rel = new Relation(relR->num_tuples);
+  partitionedR->prefixSum = new PrefixSum(pow(2,3));
 
   PartitionRec(partitionedR, relR);
 
@@ -21,25 +20,26 @@ Part* PartitionedHashJoin::Solve(){
 
  void PartitionedHashJoin::Merge(Part* destPart, Part* part){
    int partIndex = 0;
-   int relIndex = 0;
-   int pSIndex = 0;
+   int index = 0;
+   int base = 0;
 
    //Get starting indexes, to be changed...
-   for (; destPart->rel->tuples[relIndex].key != 0; relIndex++);
+   for (; destPart->rel->tuples[index].key != 0; index++);
 
-   //for (; part->prefixSum->arr[pSIndex][0] != 0; pSIndex++);
-
-   cout << "Relation Index: " << relIndex << endl;
-   cout << "pSum Index: " << pSIndex << endl;
-
-   for (int i = relIndex; i < relIndex + part->rel->num_tuples; i++){
+   for (int i = index; i < index + part->rel->num_tuples; i++){
      destPart->rel->tuples[i] = part->rel->tuples[partIndex++];
    }
 
-   /*partIndex = 0;
-   for (int i = pSIndex; i < part->prefixSum->length; i++){
-     destPart->prefixSum[i] = part->prefixSum[partIndex++];
-   }*/
+   for (index = 1; destPart->prefixSum->arr[index][1] != 0; index++);
+   if (index == 1) index = 0; // if second element's start index is 0 then first is as well.
+   else{
+     base = destPart->prefixSum->arr[index][1];
+   }
+   partIndex = 0;
+   for (int i = index; i < index + part->prefixSum->length-1; i++){
+     destPart->prefixSum->arr[i][0] = part->prefixSum->arr[partIndex][0];
+     destPart->prefixSum->arr[i][1] = part->prefixSum->arr[partIndex++][1] + base;
+   }
 }
 
 void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passNum, int n){
@@ -62,11 +62,9 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passN
 
   for (int i = 0; i < part->prefixSum->length - 1; i++){
     //Create table for each relation sub-table, to be changed...
-    Relation* breakRel = new Relation();
     int length = part->prefixSum->arr[i+1][1] - part->prefixSum->arr[i][1];
+    Relation* breakRel = new Relation(length);
     int startIndex = part->prefixSum->arr[i][1];
-    breakRel->tuples = new Tuple[length];
-    breakRel->num_tuples = length;
 
     for (int j = 0; j < length; j++){
       breakRel->tuples[j] = part->rel->tuples[j + startIndex];

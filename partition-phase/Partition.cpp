@@ -16,9 +16,7 @@ PrefixSum* Partition::GetPrefixSum(){
 
 Relation* Partition::BuildPartitionedTable(){
   PrefixSum* prefixSum = CreatePrefixSum(CreateHistogram());
-  Relation* partRel = new Relation();
-  partRel->num_tuples = rel->num_tuples;
-  partRel->tuples = new Tuple[partRel->num_tuples];
+  Relation* partRel = new Relation(rel->num_tuples);
 
   for (int i = 0; i < rel->num_tuples; i++){
     int hash = Hash(rel->tuples[i].payload, n);
