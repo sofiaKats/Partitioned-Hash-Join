@@ -5,16 +5,19 @@
 #include "Hashtable.h"
 using namespace std;
 
-Hashtable::Hashtable(int table_size, int depth){
+Hashtable::Hashtable(int table_size, int depth, int** mock_data){
+    this->emptySpaces = table_size;
     this->table_size = table_size;
     this->depth = depth;
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
         hashtable[i] = new Index();
+
+    this->mock_data = mock_data;
 }
 
-int Hashtable::hash_function(int id){
+int Hashtable::hash(int id){
 
     int i =2;
     int j =32;
@@ -95,92 +98,125 @@ void Hashtable::remove_value(int pos, int value, int hash_value ){
     hashtable[pos]->set_has_value(false); 
 }
 
-bool Hashtable::hopscotch_hatching(int** mock_data) {
-    // for every number in the mock_data array
-    for (int counter=0; counter<10; counter++) {
-        int x = mock_data[counter][0]; // store value of mock data
-        int i = mock_data[counter][1]; // store pseudo hash value of number
-        cout << "New element to be inserted is: " << x << endl;
-        //1. Check if bitmap of position i is full, if yes we rehash
-        if(hashtable[i]->is_bitmap_full()) return true;           //THERE COULD BE A BETTER WAY
-
-        //2. LINEAR SEARCH FOR EMPTY INDEX 
-        int j = find_empty_index(i);
-        
-        //2.a) If(j==-1) tote o pinakas gematos, rehashing
-        if(j==-1) { cout << "j is -1. That means table is full we need to rehash!" << endl;  return true; }        
-
-        cout << "3" << endl;
-        //3. While the empty index is not in the neighbourhood of j (H positions to the front)
-        while( ((j-i) % table_size) >= H ) {
-            cout << "4" << endl;
-            int k=-1;
-            // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
-            int bucket;
-            bool changed = false;
-            for (bucket = j - (H-1); bucket<j; bucket++){
-                int y = hashtable[bucket]->get_value();
-                cout << "5" << endl;
-                //checking each neighboring bucket's bitmap to find y's original hash value (k)
-                int k=-1, position=bucket; 
-                int loop_counter=0;
-
-                int pos = (bucket + table_size)%table_size;
-                for (int p = 0; p < H; p++){
-                    if(hashtable[pos]->get_bitmap_index(loop_counter) == 1){
-                        changed = true;
-                        k = (pos + p + table_size)%table_size;
-                        cout << "POSITION IS " << pos << " and value is " << hashtable[k]->get_value() << endl;
-                        break;                        
-                    }
-                    loop_counter++;
-                }
-
-                if (k!=-1){    
-                    //we move y to j, and making an empty spot !!
-                    add_value(j, hashtable[k]->get_value(), temp_find_hash(hashtable[k]->get_value(), mock_data));
-                    cout << "added\n";
-                    remove_value(k, hashtable[k]->get_value(), temp_find_hash(hashtable[k]->get_value(), mock_data));
-                    j = k;
-                    cout << "Now j is " << j << endl;
-                    cout << "removed!\n";
-                    break;  
-                }
-                else continue;
-            }
-            if (!changed) {
-                cout << "No element y, table need rehashing!" << endl;
-                return true;
-            }  
-        }
-        add_value(j, x, i);
-        cout << "8" << endl;
-    }
-    return false;
-}
 
 void Hashtable::resize(){
-    int new_table_size = table_size*2;
+    cout << "start resize " << endl;
+    Index** hashtable_old = hashtable;
+    int table_size_old = table_size;
+
+    this->table_size = table_size*2;
     depth+=1;
 
-    Index** hashtable_new = new Index*[new_table_size];
-    for (int i=0; i<new_table_size; i++)
-        hashtable_new[i] = new Index();
+    this->hashtable = new Index*[this->table_size];
+    for (int i=0; i<this->table_size; i++)
+        this->hashtable[i] = new Index();
+    
+    this->emptySpaces = this->table_size;    
+    
+    //re-entering the previous elements
+    for (int i=0; i<table_size_old; i++){
+        if (hashtable_old[i]->get_has_value())  add(hashtable_old[i]->get_value(), hashtable_old[i]->get_value());
+    }
 
-    for (int i=0; i<table_size; i++) delete hashtable[i];
-    delete [] hashtable;
-
-    this->hashtable = hashtable_new;
-    this->table_size = new_table_size;
+    for (int i=0; i<table_size_old; i++) delete hashtable_old[i];
+    delete [] hashtable_old;   
 }
 
-void Hashtable::Solve(int** mock_data){
-    bool to_be_resized = hopscotch_hatching(mock_data);
-    if (to_be_resized == true) {
-        resize();
-        cout << "Resized!" << endl;
-        mock_data[11][0] = 17; mock_data[11][1] = 10;
-        hopscotch_hatching(mock_data);
+
+bool Hashtable::checkHashtableFull(){
+    return (emptySpaces == 0);
+}
+
+bool Hashtable::checkBitmapFull(int index){
+    return hashtable[index]->is_bitmap_full();
+}
+
+void Hashtable::add(int key, int value){
+    cout << "to be added " << value << endl;
+    //TEMPORARILY REPLACE HASH FUNC WITH TEMP_FIND_HASH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (checkHashtableFull()) resize();    
+    int hashed_key = temp_find_hash(key, mock_data);
+    
+    while (checkBitmapFull(hashed_key)) {
+        resize();        
+        hashed_key = temp_find_hash(key, mock_data);
     }
-    else cout << "\nAll good!" << endl;
+    while (!insert(hashed_key, value)){
+        resize();        
+        hashed_key = temp_find_hash(key, mock_data);
+    }     
+}
+
+bool Hashtable::insert(int hashed_key, int value){
+    int pos = findPos(hashed_key);
+    if (pos == -1) return false;
+
+    add_value(pos, value, hashed_key);
+    emptySpaces--;
+    return true;
+}
+
+int Hashtable::findPos(int hashed_key){
+    int emptyPos = find_empty_index(hashed_key);
+    return slideLeft(hashed_key, emptyPos);  
+}
+
+int Hashtable::slideLeft(int hashed_key, int emptyPos){
+    while( ((emptyPos-hashed_key) % table_size) >= H ) {
+        emptyPos = findSwapNeighbourPos(emptyPos);
+        if (emptyPos == -1) return emptyPos;
+    }
+    return emptyPos;    
+}
+
+int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_key){
+    add_value(emptyPos, value, hashed_key);
+    remove_value(swapNeighborPos, value, hashed_key);
+    emptyPos = swapNeighborPos;
+    return emptyPos;
+}
+
+int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed){
+    int loop_counter=0;
+    int pos = (bucket + table_size) % table_size;
+    for (int p = 0; p < H; p++){ 
+        if(hashtable[pos]->get_bitmap_index(loop_counter) == 1){
+            changed = true;
+            swapNeighborPos = (pos + p + table_size)%table_size;
+            break;                        
+        }
+        loop_counter++;
+    }
+    return swapNeighborPos;
+}
+
+int Hashtable::findSwapNeighbourPos(int emptyPos){
+    cout << "4" << endl;
+    int swapNeighborPos=-1;
+    // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
+    int bucket;
+    bool changed = false;
+    //checking each neighboring bucket's bitmap to find y's original hash value (k)
+    for (bucket = emptyPos - (H-1); bucket<emptyPos; bucket++){
+        cout << "5" << endl;        
+        swapNeighborPos=-1;
+        swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed);
+
+        if (swapNeighborPos!=-1){    
+            emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), temp_find_hash(hashtable[swapNeighborPos]->get_value(), mock_data));
+            break;  
+        }
+        else continue;
+    }
+    if (!changed) {
+        cout << "No element y, table need rehashing!" << endl;
+        return -1;
+    }
+    return emptyPos;
+}
+
+void Hashtable::Solve(){
+    for (int counter=0; counter<11; counter++) {
+        add(mock_data[counter][0], mock_data[counter][0]);
+    }
 }

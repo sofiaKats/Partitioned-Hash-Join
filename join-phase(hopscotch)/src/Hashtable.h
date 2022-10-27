@@ -6,17 +6,29 @@ using namespace std;
 
 class Hashtable{
 private:
+    int emptySpaces;
     int table_size;
     int depth;
     Index** hashtable;
-public:
-    Hashtable(int, int);
-    int hash_function(int);
+
+    int** mock_data;
+
+    bool checkHashtableFull();
+    bool checkBitmapFull(int);
+    bool insert(int, int);
+    int findPos(int);
+    int checkBucketBitmap(int, int&, bool&);
+    int swapEmpty(int, int, int, int);
+    int findSwapNeighbourPos(int);
+    int slideLeft(int, int);
+    int hash(int);
     int find_empty_index(int);
     void add_value(int, int, int);
     void remove_value(int, int, int);
-    void resize();           //temporary argument
-    bool hopscotch_hatching(int**);
+    void resize();
+public:
+    Hashtable(int, int, int**);
+    void add(int, int);               
     void print_hashtable();
-    void Solve(int**);
+    void Solve();
 };

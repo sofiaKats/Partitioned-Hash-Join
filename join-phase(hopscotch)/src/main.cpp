@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
         srand(time(0));
 
-        Hashtable* htable = new Hashtable(table_size, 10); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
+        
 
         // creating mock data to test if the algorithm works.
         // mock_data column 0: holds a random value
@@ -34,13 +34,14 @@ int main(int argc, char* argv[]) {
         mock_data[7][0] = 55; mock_data[7][1] = 2;
         mock_data[8][0] = 16; mock_data[8][1] = 6;
         mock_data[9][0] = 46; mock_data[9][1] = 8;
-        //mock_data[10][0] = 16; mock_data[10][1] = 6;
+        mock_data[10][0] = 17; mock_data[10][1] = 9;
         //mock_data[11][0] = 17; mock_data[11][1] = 6;
         //mock_data[12][0] = 17; mock_data[11][1] = 9;
 
+        Hashtable* htable = new Hashtable(table_size, 10, mock_data); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
 
         //htable->hopscotch_hatching(mock_data);
-        htable->Solve(mock_data);
+        htable->Solve();
         htable->print_hashtable();
 
         // free hashtable memory
