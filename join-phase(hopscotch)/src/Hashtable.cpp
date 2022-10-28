@@ -19,20 +19,28 @@ Hashtable::Hashtable(int table_size, int depth, int** mock_data){
 
 int Hashtable::hash(int id){
 
-    int i =2;
-    int j =32;
+    int i = 2;
+    int j = 32;
     int hashed_value = (int) (id*2654435761 % (int)pow(i,j));
 
-    hashed_value = hashed_value >> (32-depth); 
+    hashed_value = hashed_value >> (31-depth);
+    cout << "Hashed value is " << hashed_value << endl;
+    return hashed_value;
 }
 
 void Hashtable::print_hashtable() {
     cout << "FINAL HASHTABLE: " << endl;
-    for(int bucket=0; bucket<table_size; bucket++) cout << "   " << hashtable[bucket]->get_value();
+    for(int bucket=0; bucket<table_size; bucket++) {
+        if (hashtable[bucket]->get_has_value()) cout << "   " << hashtable[bucket]->get_value();
+        else cout << "   " << 0;
+    }
     
     cout << endl << "\n Corresponding bitmaps: " << endl;
-    for(int bucket=0; bucket<table_size; bucket++) {
-        cout << "BUCKET " << bucket << " with value:  " <<  hashtable[bucket]->get_value() << " : ";
+    for(int bucket = 0; bucket < table_size; bucket++) {
+        cout << "BUCKET " << bucket << " with value:  ";
+        if (hashtable[bucket]->get_has_value()) cout <<  hashtable[bucket]->get_value() << " : ";
+        else                                    cout << "0: ";
+
         for (int bit=0; bit< H ; bit++)  cout << "  " << hashtable[bucket]->get_bitmap_index(bit);
         cout << endl;
     }
@@ -67,6 +75,7 @@ int Hashtable::find_empty_index(int i){
 }
 
 void Hashtable::add_value(int pos, int value, int hash_value){
+    
     hashtable[pos]->set_value(value);
     hashtable[pos]->set_has_value(true);
 
@@ -105,7 +114,7 @@ void Hashtable::resize(){
     int table_size_old = table_size;
 
     this->table_size = table_size*2;
-    depth+=1;
+    this->depth+=1;
 
     this->hashtable = new Index*[this->table_size];
     for (int i=0; i<this->table_size; i++)
@@ -133,17 +142,19 @@ bool Hashtable::checkBitmapFull(int index){
 
 void Hashtable::add(int key, int value){
     cout << "to be added " << value << endl;
-    //TEMPORARILY REPLACE HASH FUNC WITH TEMP_FIND_HASH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     if (checkHashtableFull()) resize();    
-    int hashed_key = temp_find_hash(key, mock_data);
+    int hashed_key = hash(key);
     
     while (checkBitmapFull(hashed_key)) {
+        cout << "!!!!!!!!!!!!!!Resize2" << endl;
         resize();        
-        hashed_key = temp_find_hash(key, mock_data);
+        hashed_key = hash(key);
     }
     while (!insert(hashed_key, value)){
+        cout << "!!!!!!!!!!!!!!resize3" << endl;
         resize();        
-        hashed_key = temp_find_hash(key, mock_data);
+        hashed_key = hash(key);
     }     
 }
 
@@ -164,6 +175,7 @@ int Hashtable::findPos(int hashed_key){
 int Hashtable::slideLeft(int hashed_key, int emptyPos){
     while( ((emptyPos-hashed_key) % table_size) >= H ) {
         emptyPos = findSwapNeighbourPos(emptyPos);
+        //cout << "SlideLeft: emptyPos is " << emptyPos << " hashed key is " << hashed_key << endl;
         if (emptyPos == -1) return emptyPos;
     }
     return emptyPos;    
@@ -176,38 +188,68 @@ int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashe
     return emptyPos;
 }
 
-int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed){
-    int loop_counter=0;
-    int pos = (bucket + table_size) % table_size;
-    for (int p = 0; p < H; p++){ 
-        if(hashtable[pos]->get_bitmap_index(loop_counter) == 1){
+int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed, int loops){
+    cout << "We will do " << loops << " loops " << endl;
+    //cout << "CheckBucketBitmap: bucket is " << bucket << endl;
+    for (int bit_pos = 0; bit_pos < loops; bit_pos++){ 
+        if(hashtable[bucket]->get_bitmap_index(bit_pos) == 1){
             changed = true;
-            swapNeighborPos = (pos + p + table_size)%table_size;
+            swapNeighborPos = findNeighborPosByK(bucket, bit_pos);
             break;                        
         }
-        loop_counter++;
     }
     return swapNeighborPos;
 }
 
+// int Hashtable::findSwapNeighbourPos(int emptyPos){
+//     cout << "4" << endl;
+//     int swapNeighborPos=-1;
+//     // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
+//     int bucket;
+//     bool changed = false;
+//     //checking each neighboring bucket's bitmap to find y's original hash value (k)
+//     for (bucket = emptyPos - (H-1); bucket<emptyPos; bucket++){
+//         cout << "5" << endl;        
+//         swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, emptyPos - bucket -1);
+//         cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
+
+//         if (swapNeighborPos!=-1){    
+//             emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()));
+//             cout << "findSwapNeighborPos: empty pos is " << emptyPos << endl;
+//             break;  
+//         }
+//     }
+//     cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
+//     if (!changed) {
+//         cout << "No element y, table need rehashing!" << endl;
+//         return -1;
+//     }
+//     return emptyPos;
+// }
+
 int Hashtable::findSwapNeighbourPos(int emptyPos){
     cout << "4" << endl;
     int swapNeighborPos=-1;
+    int posLeftToCheckBitmaps = H-1;
     // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
-    int bucket;
+    int bucket = emptyPos - (H-1);
     bool changed = false;
     //checking each neighboring bucket's bitmap to find y's original hash value (k)
-    for (bucket = emptyPos - (H-1); bucket<emptyPos; bucket++){
+    for (int i = 0; i< H - 1; i++){        
+        
         cout << "5" << endl;        
-        swapNeighborPos=-1;
-        swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed);
+        swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, posLeftToCheckBitmaps);
+        //cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
 
         if (swapNeighborPos!=-1){    
-            emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), temp_find_hash(hashtable[swapNeighborPos]->get_value(), mock_data));
+            emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()));
+            //cout << "findSwapNeighborPos: empty pos is " << emptyPos << endl;
             break;  
         }
-        else continue;
+        bucket = findNeighborPosByK(bucket, 1);
+        posLeftToCheckBitmaps--;
     }
+    cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
     if (!changed) {
         cout << "No element y, table need rehashing!" << endl;
         return -1;
@@ -216,7 +258,11 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
 }
 
 void Hashtable::Solve(){
-    for (int counter=0; counter<11; counter++) {
+    for (int counter=0; counter<65; counter++) {
         add(mock_data[counter][0], mock_data[counter][0]);
     }
+}
+
+int Hashtable::findNeighborPosByK(int currPos, int k){
+    return (currPos + k + table_size)%table_size;
 }

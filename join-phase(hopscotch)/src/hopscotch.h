@@ -2,7 +2,7 @@
 #include <cstring>
 using namespace std;
 
-#define H 3 
+#define H 4 
 #define L2_SIZE 256000
 
 // each index of the hopscoth table has a value and a corresponding bitmap

@@ -13,11 +13,12 @@ private:
 
     int** mock_data;
 
+    int findNeighborPosByK(int, int);
     bool checkHashtableFull();
     bool checkBitmapFull(int);
     bool insert(int, int);
     int findPos(int);
-    int checkBucketBitmap(int, int&, bool&);
+    int checkBucketBitmap(int, int&, bool&, int);
     int swapEmpty(int, int, int, int);
     int findSwapNeighbourPos(int);
     int slideLeft(int, int);
