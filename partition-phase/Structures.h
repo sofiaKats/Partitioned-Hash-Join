@@ -1,3 +1,6 @@
+#ifndef STRUCTURES_H
+#define STRUCTURES_H
+
 #include <iostream>
 #include <cstdint>
 
@@ -50,3 +53,5 @@ typedef struct Part{
   Relation* rel;
   PrefixSum* prefixSum;
 } Part;
+
+#endif

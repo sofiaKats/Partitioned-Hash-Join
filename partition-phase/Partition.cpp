@@ -16,36 +16,32 @@ PrefixSum* Partition::GetPrefixSum(){
   return prefixSum;
 }
 
-Relation* Partition::BuildPartitionedTable(){
-  PrefixSum* prefixSum = CreatePrefixSum(CreateHistogram());
-  Relation* partRel = new Relation(endIndex - startIndex);
+Part* Partition::BuildPartitionedTable(){
+  Part* parted = new Part();
+  parted->prefixSum = CreatePrefixSum(CreateHistogram());
+  parted->rel = new Relation(endIndex - startIndex);
 
   for (int i = startIndex; i < endIndex; i++){
     int hash = Hash(rel->tuples[i].payload, n);
     int index;
 
-    for (int j = 0; j < prefixSum->length; j++){
-      if (prefixSum->arr[j][0] == hash){
-        index = prefixSum->arr[j][1];
+    for (int j = 0; j < parted->prefixSum->length; j++){
+      if (parted->prefixSum->arr[j][0] == hash){
+        index = parted->prefixSum->arr[j][1];
         break;
       }
     }
 
-    for (; partRel->tuples[index].payload != 0; index++); //find empty bucket
-    partRel->tuples[index].key = rel->tuples[i].key;
-    partRel->tuples[index].payload = rel->tuples[i].payload;
+    for (; parted->rel->tuples[index].payload != 0; index++); //find empty bucket
+    parted->rel->tuples[index].key = rel->tuples[i].key;
+    parted->rel->tuples[index].payload = rel->tuples[i].payload;
   }
-  return partRel;
+  return parted;
 }
 
 Hist* Partition::CreateHistogram(){
   int histLength = pow(2,n);
   Hist* hist = new Hist(histLength);
-
-  //initialisation
-  for (int i = 0; i < histLength; i++){
-    hist->arr[i] = 0;
-  }
 
   for (int i = startIndex; i < endIndex; i++){
     int index = Hash(rel->tuples[i].payload, n);
@@ -53,7 +49,10 @@ Hist* Partition::CreateHistogram(){
   }
 
   cout << "HISTOGRAM \n";
-  for (int i = 0; i < histLength; i++){
+  for (int i = 0; i < histLength; i++){ //calculate largestTableSize
+    if (hist->arr[i] == 0) continue;
+    if (hist->arr[i] > largestTableSize)
+      largestTableSize = hist->arr[i];
     cout << i << " : " << hist->arr[i]<<endl;
   }
 
@@ -96,5 +95,5 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
 }
 
 uint32_t Partition::GetLargestTableSize(){
-  return 4;// to be fixed
+  return largestTableSize;
 }

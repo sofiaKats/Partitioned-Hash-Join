@@ -1,6 +1,7 @@
 #include "PartitionedHashJoin.h"
 
 #define MAX_PASSES 2
+#define L2CACHE 1
 
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
   this->relR = relR;
@@ -55,11 +56,9 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passN
 
   Partition* partition = new Partition(rel, n, from, to);
 
-  Part* part = new Part();
-  part->rel = partition->BuildPartitionedTable();
-  part->prefixSum = partition->GetPrefixSum();
+  Part* part = partition->BuildPartitionedTable();
 
-  if (passNum == MAX_PASSES){
+  if (passNum == MAX_PASSES || partition->GetLargestTableSize() < L2CACHE){
     //Merge Relation and PrefixSum table to finalPart tables
     Merge(finalPart, part, from);
     return;

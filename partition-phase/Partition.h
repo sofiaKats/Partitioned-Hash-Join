@@ -6,13 +6,14 @@ private:
   int n; //for number of lsb for hashing
   int startIndex;
   int endIndex;
-  int Hash(int32_t, int);
-  PrefixSum* prefixSum;
+  int largestTableSize;
   Relation* rel;
+  PrefixSum* prefixSum;
+  int Hash(int32_t, int);
 
 public:
   Partition(Relation*, int, int = 0, int = -1);
-  Relation* BuildPartitionedTable();
+  Part* BuildPartitionedTable();
   Hist* CreateHistogram();
   PrefixSum* CreatePrefixSum(Hist*);
   PrefixSum* GetPrefixSum();
