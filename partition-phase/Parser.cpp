@@ -1,7 +1,8 @@
 #include "Parser.h"
 
 Relation* Parser::Parse(string fileName){
-  ifstream ifile(fileName);
+  ifstream ifile;
+  //ifile.open(fileName);
   //if (!ifile.is_open()){
   //  cout << "Could not open file: " << fileName << endl;
   //  return NULL;

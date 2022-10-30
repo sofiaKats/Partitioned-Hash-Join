@@ -23,6 +23,9 @@ typedef struct Relation {
     tuples = new Tuple[size];
     num_tuples = size;
   }
+  ~Relation(){
+    delete(tuples);
+  }
 } Relation;
 
 typedef struct Hist{
@@ -32,6 +35,9 @@ typedef struct Hist{
   Hist(int size){
     arr = new int[size];
     length = size;
+  }
+  ~Hist(){
+    delete(arr);
   }
 } Hist;
 
@@ -47,11 +53,21 @@ typedef struct PrefixSum{
       arr[i] = new int[2];
     }
   }
+  ~PrefixSum(){
+    for (int i = 0; i < length; i++){
+      delete(arr[i]);
+    }
+    delete(arr);
+  }
 } PrefixSum;
 
 typedef struct Part{
   Relation* rel;
   PrefixSum* prefixSum;
+  ~Part(){
+    delete(rel);
+    delete(prefixSum);
+  }
 } Part;
 
 #endif

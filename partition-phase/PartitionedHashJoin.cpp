@@ -1,6 +1,7 @@
 #include "PartitionedHashJoin.h"
 
 #define MAX_PASSES 2
+#define MAX_PARTITIONS 4
 #define L2CACHE 1
 
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
@@ -9,16 +10,16 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 }
 
 Part* PartitionedHashJoin::Solve(){
-  Part* part = new Part();
   Part* partitionedR = new Part();
   //Part* partitionedS = new Part();
 
   partitionedR->rel = new Relation(relR->num_tuples);
-  partitionedR->prefixSum = new PrefixSum(pow(2,2) + 1);
+  partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
+
   //partitionedS->rel = new Relation(relS->num_tuples);
   //partitionedS->prefixSum = new PrefixSum(pow(2,2) + 1);
 
-  PartitionRec(partitionedR, relR);
+  PartitionRec(partitionedR, relR, 2);
   //PartitionRec(partitionedS, relS);
 
   return partitionedR;
@@ -41,6 +42,7 @@ Part* PartitionedHashJoin::Solve(){
      index--;
      base = destPart->prefixSum->arr[index][1];
    }
+
    partIndex = 0;
    for (int i = index; i < index + part->prefixSum->length; i++){
      destPart->prefixSum->arr[i][0] = part->prefixSum->arr[partIndex][0];
@@ -48,7 +50,7 @@ Part* PartitionedHashJoin::Solve(){
    }
 }
 
-void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passNum, int n, int from, int to){
+void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, int passNum, int from, int to){
   passNum++;
   n++;
 
@@ -68,6 +70,10 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int passN
     from = part->prefixSum->arr[i][1];
     to = part->prefixSum->arr[i+1][1];
 
-    PartitionRec(finalPart, part->rel, passNum, n, from, to);
+    PartitionRec(finalPart, part->rel, n, passNum, from, to);
   }
+}
+
+PartitionedHashJoin::~PartitionedHashJoin(){
+  
 }

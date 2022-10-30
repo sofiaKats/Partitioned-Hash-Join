@@ -33,15 +33,19 @@ Part* Partition::BuildPartitionedTable(){
     }
 
     for (; parted->rel->tuples[index].payload != 0; index++); //find empty bucket
-    parted->rel->tuples[index].key = rel->tuples[i].key;
-    parted->rel->tuples[index].payload = rel->tuples[i].payload;
+    parted->rel->tuples[index] = rel->tuples[i];
   }
+
   return parted;
 }
 
 Hist* Partition::CreateHistogram(){
   int histLength = pow(2,n);
   Hist* hist = new Hist(histLength);
+
+  for (int i = 0; i < histLength; i++){
+    hist->arr[i] = 0;
+  }
 
   for (int i = startIndex; i < endIndex; i++){
     int index = Hash(rel->tuples[i].payload, n);
@@ -91,6 +95,9 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   }
 
   this->prefixSum = prefixSum;
+
+  delete(hist);
+
   return prefixSum;
 }
 
