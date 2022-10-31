@@ -63,6 +63,8 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
   if (passNum == MAX_PASSES || partition->GetLargestTableSize() < L2CACHE){
     //Merge Relation and PrefixSum table to finalPart tables
     Merge(finalPart, part, from);
+    delete(partition);
+    delete(part);
     return;
   }
 
@@ -72,8 +74,11 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
 
     PartitionRec(finalPart, part->rel, n, passNum, from, to);
   }
+
+  delete(partition);
+  delete(part);
 }
 
 PartitionedHashJoin::~PartitionedHashJoin(){
-  
+
 }
