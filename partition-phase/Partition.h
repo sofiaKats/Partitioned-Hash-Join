@@ -8,7 +8,6 @@ private:
   int endIndex;
   int largestTableSize;
   Relation* rel;
-  PrefixSum* prefixSum;
   int Hash(int32_t, int);
   Hist* CreateHistogram();
   PrefixSum* CreatePrefixSum(Hist*);
@@ -16,6 +15,5 @@ private:
 public:
   Partition(Relation*, int, int = 0, int = -1);
   Part* BuildPartitionedTable();
-  PrefixSum* GetPrefixSum();
   uint32_t GetLargestTableSize();
 };

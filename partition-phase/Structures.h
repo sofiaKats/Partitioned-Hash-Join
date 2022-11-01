@@ -19,12 +19,12 @@ typedef struct Relation {
   Tuple* tuples;
   uint32_t num_tuples;
 
-  Relation(int size){
+  Relation(uint32_t size){
     tuples = new Tuple[size];
     num_tuples = size;
   }
   ~Relation(){
-    delete(tuples);
+    delete[] tuples;
   }
 } Relation;
 
@@ -32,12 +32,12 @@ typedef struct Hist{
   uint32_t length;
   int* arr;
 
-  Hist(int size){
-    arr = new int[size];
+  Hist(uint32_t size){
+    arr = new int[size]{};
     length = size;
   }
   ~Hist(){
-    delete(arr);
+    delete[] arr;
   }
 } Hist;
 
@@ -45,19 +45,19 @@ typedef struct PrefixSum{
   uint32_t length;
   int** arr;
 
-  PrefixSum(int size){
+  PrefixSum(uint32_t size){
     arr = new int*[size];
     length = size;
 
-    for (int i = 0; i < length; i++){
-      arr[i] = new int[2];
+    for (uint32_t i = 0; i < length; i++){
+      arr[i] = new int[2]{};
     }
   }
   ~PrefixSum(){
-    for (int i = 0; i < length; i++){
-      delete(arr[i]);
+    for (uint32_t i = 0; i < length; i++){
+      delete[] arr[i];
     }
-    delete(arr);
+    delete[] arr;
   }
 } PrefixSum;
 
@@ -65,8 +65,8 @@ typedef struct Part{
   Relation* rel;
   PrefixSum* prefixSum;
   ~Part(){
-    delete(rel);
-    delete(prefixSum);
+    delete rel;
+    delete prefixSum;
   }
 } Part;
 

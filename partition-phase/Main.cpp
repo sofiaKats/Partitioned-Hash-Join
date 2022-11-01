@@ -22,13 +22,16 @@ int main(int argc, char** argv){
 
   cout << "\n----- Final PrefixSum Table -----\n";
   for (int i = 0 ; i < finalPart->prefixSum->length; i++){
-    if (finalPart->prefixSum->arr[i][0] == 0) break;
+    if (finalPart->prefixSum->arr[i+1][1] == 0){
+      cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
+      break;
+    }
     cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
   }
 
-  delete(finalPart);
-  delete(parser);
-  delete(relR);
-  //delete(relS);
-  delete(phj);
+  delete finalPart;
+  delete parser;
+  delete relR;
+  //delete relS;
+  delete phj;
 }

@@ -19,7 +19,7 @@ Part* PartitionedHashJoin::Solve(){
   //partitionedS->rel = new Relation(relS->num_tuples);
   //partitionedS->prefixSum = new PrefixSum(pow(2,2) + 1);
 
-  PartitionRec(partitionedR, relR, 2);
+  PartitionRec(partitionedR, relR, 0);
   //PartitionRec(partitionedS, relS);
 
   return partitionedR;
@@ -48,6 +48,7 @@ Part* PartitionedHashJoin::Solve(){
      destPart->prefixSum->arr[i][0] = part->prefixSum->arr[partIndex][0];
      destPart->prefixSum->arr[i][1] = part->prefixSum->arr[partIndex++][1] + base;
    }
+
 }
 
 void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, int passNum, int from, int to){
@@ -63,8 +64,8 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
   if (passNum == MAX_PASSES || partition->GetLargestTableSize() < L2CACHE){
     //Merge Relation and PrefixSum table to finalPart tables
     Merge(finalPart, part, from);
-    delete(partition);
-    delete(part);
+    delete partition;
+    //delete part;
     return;
   }
 
@@ -75,10 +76,6 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
     PartitionRec(finalPart, part->rel, n, passNum, from, to);
   }
 
-  delete(partition);
-  delete(part);
-}
-
-PartitionedHashJoin::~PartitionedHashJoin(){
-
+  delete partition;
+  delete part;
 }

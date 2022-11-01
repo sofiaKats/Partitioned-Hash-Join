@@ -12,13 +12,11 @@ int Partition::Hash(int key, int n){
   return tmp >> (32 - n);
 }
 
-PrefixSum* Partition::GetPrefixSum(){
-  return prefixSum;
-}
-
 Part* Partition::BuildPartitionedTable(){
   Part* parted = new Part();
-  parted->prefixSum = CreatePrefixSum(CreateHistogram());
+  Hist* hist = CreateHistogram();
+
+  parted->prefixSum = CreatePrefixSum(hist);
   parted->rel = new Relation(endIndex - startIndex);
 
   for (int i = startIndex; i < endIndex; i++){
@@ -36,16 +34,14 @@ Part* Partition::BuildPartitionedTable(){
     parted->rel->tuples[index] = rel->tuples[i];
   }
 
+  delete hist;
+
   return parted;
 }
 
 Hist* Partition::CreateHistogram(){
   int histLength = pow(2,n);
   Hist* hist = new Hist(histLength);
-
-  for (int i = 0; i < histLength; i++){
-    hist->arr[i] = 0;
-  }
 
   for (int i = startIndex; i < endIndex; i++){
     int index = Hash(rel->tuples[i].payload, n);
@@ -54,7 +50,7 @@ Hist* Partition::CreateHistogram(){
 
   cout << "HISTOGRAM \n";
   for (int i = 0; i < histLength; i++){ //calculate largestTableSize
-    if (hist->arr[i] == 0) continue;
+    //if (hist->arr[i] == 0) continue;
     if (hist->arr[i] > largestTableSize)
       largestTableSize = hist->arr[i];
     cout << i << " : " << hist->arr[i]<<endl;
@@ -82,8 +78,7 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
       continue;
 
     prefixSum->arr[pIndex][0] = i;
-    prefixSum->arr[pIndex][1] = psum;
-    pIndex++;
+    prefixSum->arr[pIndex++][1] = psum;
     psum += hist->arr[i];
   }
   prefixSum->arr[pIndex][0] = -1;
@@ -93,10 +88,6 @@ PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   for (int i = 0; i < prefixSum->length; i++){
     cout << prefixSum->arr[i][0] << " : " << prefixSum->arr[i][1]<<endl;
   }
-
-  this->prefixSum = prefixSum;
-
-  delete(hist);
 
   return prefixSum;
 }
