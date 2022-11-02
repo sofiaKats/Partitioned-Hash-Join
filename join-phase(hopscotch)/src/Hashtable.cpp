@@ -258,7 +258,7 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
 }
 
 void Hashtable::Solve(){
-    for (int counter=0; counter<65; counter++) {
+    for (int counter=0; counter<8; counter++) {
         add(mock_data[counter][0], mock_data[counter][0]);
     }
 }

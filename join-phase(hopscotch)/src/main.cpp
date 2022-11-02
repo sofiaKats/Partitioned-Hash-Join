@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         //mock_data[11][0] = 17; mock_data[11][1] = 6;
         //mock_data[12][0] = 17; mock_data[11][1] = 9;
 
-        Hashtable* htable = new Hashtable(table_size, 6, mock_data); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
+        Hashtable* htable = new Hashtable(table_size, 3, mock_data); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
 
         //htable->hopscotch_hatching(mock_data);
         htable->Solve();
