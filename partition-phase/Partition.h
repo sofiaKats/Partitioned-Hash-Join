@@ -6,7 +6,7 @@ private:
   int n; //for number of lsb for hashing
   int startIndex;
   int endIndex;
-  int largestTableSize;
+  int largestTableSize = 0;
   Relation* rel;
   int Hash(int32_t, int);
   Hist* CreateHistogram();

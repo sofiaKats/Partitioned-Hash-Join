@@ -7,8 +7,8 @@
 using namespace std;
 
 typedef struct Tuple {
-  int32_t key;
-  int32_t payload;
+  int32_t key = 0;
+  int32_t payload = 0;
 } Tuple;
 
 /**

@@ -1,7 +1,7 @@
 #include "PartitionedHashJoin.h"
 
 #define MAX_PASSES 2
-#define MAX_PARTITIONS 4
+#define MAX_PARTITIONS 5
 #define L2CACHE 1
 
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
@@ -19,7 +19,7 @@ Part* PartitionedHashJoin::Solve(){
   //partitionedS->rel = new Relation(relS->num_tuples);
   //partitionedS->prefixSum = new PrefixSum(pow(2,2) + 1);
 
-  PartitionRec(partitionedR, relR, 0);
+  PartitionRec(partitionedR, relR, 2);
   //PartitionRec(partitionedS, relS);
 
   return partitionedR;
@@ -65,7 +65,7 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
     //Merge Relation and PrefixSum table to finalPart tables
     Merge(finalPart, part, from);
     delete partition;
-    //delete part;
+    delete part;
     return;
   }
 
