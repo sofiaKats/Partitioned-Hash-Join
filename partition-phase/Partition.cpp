@@ -50,7 +50,8 @@ Hist* Partition::CreateHistogram(){
 
   cout << "HISTOGRAM \n";
   for (int i = 0; i < histLength; i++){ //calculate largestTableSize
-    //if (hist->arr[i] == 0) continue;
+    if (hist->arr[i] == 0) continue;
+    hist->usedLength++;
     if (hist->arr[i] > largestTableSize)
       largestTableSize = hist->arr[i];
     cout << i << " : " << hist->arr[i]<<endl;
@@ -62,16 +63,9 @@ Hist* Partition::CreateHistogram(){
 PrefixSum* Partition::CreatePrefixSum(Hist* hist){
   int psum = 0;
   int pIndex = 0;
-  int counter = 0; //counting hist length(prefix length)
   PrefixSum* prefixSum;
 
-  for (int i = 0; i < hist->length; i++){ //count hist length
-    if (hist->arr[i] == 0)
-      continue;
-    counter++;
-  }
-
-  prefixSum = new PrefixSum(counter + 1);
+  prefixSum = new PrefixSum(hist->usedLength + 1);
 
   for (int i = 0; i < hist->length; i++){
     if (hist->arr[i] == 0)

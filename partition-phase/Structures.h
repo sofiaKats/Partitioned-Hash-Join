@@ -30,6 +30,7 @@ typedef struct Relation {
 
 typedef struct Hist{
   uint32_t length;
+  uint32_t usedLength = 0;
   int* arr;
 
   Hist(uint32_t size){
