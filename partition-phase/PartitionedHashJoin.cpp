@@ -30,7 +30,7 @@ Part* PartitionedHashJoin::Solve(){
   PrintPart(partitionedR);
   cout << "Ready for join query input" << endl; 
 
-  //return partitionedS;
+  return partitionedS;
 }
 
  void PartitionedHashJoin::Merge(Part* destPart, Part* part, int from){

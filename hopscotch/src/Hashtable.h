@@ -9,6 +9,7 @@ private:
     int emptySpaces;
     int table_size;
     int depth;
+    int H;
     Index** hashtable;
 
     int** mock_data;

@@ -4,11 +4,12 @@
 #include "Index.h"
 using namespace std;
 
-Index::Index() : has_value(false)
+Index::Index(int H) : has_value(false)
 {
     bitmap = new int[H];
     // initializing bitmap with 0s
     for (int i=0; i<H; i++) bitmap[i] = 0;
+    this->H = H;
 }
 
 Index::~Index()

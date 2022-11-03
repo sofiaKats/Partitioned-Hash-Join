@@ -71,7 +71,7 @@ typedef struct Part{
     delete rel;
     delete prefixSum;
     // for (int i = 0; i < prefixSum->length; i++){
-    //   delete[] hashtables[i];
+    //   delete hashtables[i];
     // }
     // delete[] hashtables;
   }

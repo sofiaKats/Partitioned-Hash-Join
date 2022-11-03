@@ -2,7 +2,7 @@
 #include <cstring>
 using namespace std;
 
-#define H 2 
+//#define H 2 
 #define L2_SIZE 256000
 
 // each index of the hopscoth table has a value and a corresponding bitmap
@@ -12,8 +12,9 @@ private:
     int value;
     bool has_value; //flag to check if position is empty
     int* bitmap;
+    int H;
 public:
-    Index();
+    Index(int);
     ~Index();
     void set_bitmap_index_to_1(const int index); 
     void set_bitmap_index_to_0(const int index); 
