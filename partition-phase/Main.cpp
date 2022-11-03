@@ -28,6 +28,8 @@ int main(int argc, char** argv){
     }
     cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
   }
+  //phj->BuildHashtables(finalPart);
+  //phj->PrintHashtables(finalPart);
 
   delete finalPart;
   delete parser;

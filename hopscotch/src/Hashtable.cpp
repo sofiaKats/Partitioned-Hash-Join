@@ -5,16 +5,42 @@
 #include "Hashtable.h"
 using namespace std;
 
-Hashtable::Hashtable(int table_size, int depth, int** mock_data){
+// Hashtable::Hashtable(int table_size, int depth, int** mock_data){
+//     this->emptySpaces = table_size;
+//     this->table_size = table_size;
+//     //this->table_size = findClosestPowerOf2(table_size);
+//     //this->depth = findClosestPowerOf2(table_size);
+//     this->depth = depth;
+
+//     hashtable = new Index*[table_size];
+//     for (int i=0; i<table_size; i++)
+//         hashtable[i] = new Index();
+
+//     this->mock_data = mock_data;
+// }
+
+Hashtable::Hashtable(int tableR_size){
+    this->depth = findClosestPowerOf2(tableR_size);
+    this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
-    this->table_size = table_size;
-    this->depth = depth;
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
         hashtable[i] = new Index();
 
-    this->mock_data = mock_data;
+    //cout << "Hashtable size is " << table_size << endl;
+}
+
+int Hashtable::findClosestPowerOf2(int number){
+    int counter = 0; 
+    int power = 1;
+    while(power < number){
+        power*=2;
+        counter++;
+    }
+    
+    //cout << "Power is " << counter << endl;
+    return counter;
 }
 
 int Hashtable::hash(int id){
@@ -51,7 +77,7 @@ int Hashtable::find_empty_index(int i){
     int j=-1; // linear search of array for empty space
     for(int bucket=i; bucket<table_size; bucket++)
     {
-        cout << "2" << endl;
+        //cout << "2" << endl;
         if(hashtable[bucket]->get_has_value() == false){
             j = bucket;
             break;
@@ -64,7 +90,7 @@ int Hashtable::find_empty_index(int i){
         //COULD BE DONE MORE EFFICIENTLY WITH MOD!
         for(int bucket=0; bucket<i-1; bucket++)
         {
-            cout << "2" << endl;
+            //cout << "2" << endl;
             if(hashtable[bucket]->get_has_value() == false){
                 j = bucket;
                 break;
@@ -74,8 +100,7 @@ int Hashtable::find_empty_index(int i){
     return j;
 }
 
-void Hashtable::add_value(int pos, int value, int hash_value){
-    
+void Hashtable::add_value(int pos, int value, int hash_value){    
     hashtable[pos]->set_value(value);
     hashtable[pos]->set_has_value(true);
 
@@ -141,7 +166,7 @@ bool Hashtable::checkBitmapFull(int index){
 }
 
 void Hashtable::add(int key, int value){
-    cout << "to be added " << value << endl;
+    //cout << "to be added " << value << endl;
 
     if (checkHashtableFull()) resize();    
     int hashed_key = hash(key);
@@ -189,7 +214,7 @@ int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashe
 }
 
 int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed, int loops){
-    cout << "We will do " << loops << " loops " << endl;
+    //cout << "We will do " << loops << " loops " << endl;
     //cout << "CheckBucketBitmap: bucket is " << bucket << endl;
     for (int bit_pos = 0; bit_pos < loops; bit_pos++){ 
         if(hashtable[bucket]->get_bitmap_index(bit_pos) == 1){
@@ -228,7 +253,7 @@ int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed
 // }
 
 int Hashtable::findSwapNeighbourPos(int emptyPos){
-    cout << "4" << endl;
+    //cout << "4" << endl;
     int swapNeighborPos=-1;
     int posLeftToCheckBitmaps = H-1;
     // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
@@ -237,7 +262,7 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
     //checking each neighboring bucket's bitmap to find y's original hash value (k)
     for (int i = 0; i< H - 1; i++){        
         
-        cout << "5" << endl;        
+        //cout << "5" << endl;        
         swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, posLeftToCheckBitmaps);
         //cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
 
@@ -249,7 +274,7 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
         bucket = findNeighborPosByK(bucket, 1);
         posLeftToCheckBitmaps--;
     }
-    cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
+    //cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
     if (!changed) {
         cout << "No element y, table need rehashing!" << endl;
         return -1;
@@ -258,8 +283,8 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
 }
 
 void Hashtable::Solve(){
-    for (int counter=0; counter<8; counter++) {
-        add(mock_data[counter][0], mock_data[counter][0]);
+    for (int counter=8; counter>0; counter--) {
+        add(counter, counter);
     }
 }
 

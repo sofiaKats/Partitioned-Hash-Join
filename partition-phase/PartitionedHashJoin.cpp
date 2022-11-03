@@ -79,3 +79,35 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
   delete partition;
   delete part;
 }
+
+void PartitionedHashJoin::BuildHashtables(Part* part){
+  int hashtablesLength = part->prefixSum->length;
+  part->hashtables = new Hashtable*[hashtablesLength];
+  int subRelationSize;
+  int indexR = 0;
+  //for every partition table
+  for (int i = 1; i < hashtablesLength; i++){
+    //find its size from prefix sum
+    subRelationSize = part->prefixSum->arr[i][1] - part->prefixSum->arr[i - 1][1];
+
+    //create new hashtable for this partition
+    part->hashtables[i - 1] = new Hashtable(subRelationSize);
+
+    //fill hashtable
+    for (int j = 0; j < subRelationSize; j++){
+      part->hashtables[i - 1]->add(part->rel->tuples[indexR].payload, part->rel->tuples[indexR].payload);
+      indexR++;
+    }
+
+    if(part->prefixSum->arr[i][0] == -1) break;           //  TO BE FIXED!!!!!!!!!!!
+  }
+}
+
+void PartitionedHashJoin::PrintHashtables(Part* part){
+  for (int i = 1 ; i < part->prefixSum->length; i++){
+    cout << "\n\nHASHTABLE NUMBER: " << i << endl; 
+    part->hashtables[i - 1]->print_hashtable();
+
+    if(part->prefixSum->arr[i][0] == -1) break;
+  }
+}

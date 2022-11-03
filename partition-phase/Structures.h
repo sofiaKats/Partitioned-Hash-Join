@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstdint>
+#include "../hopscotch/src/Hashtable.h"
 
 using namespace std;
 
@@ -65,6 +66,7 @@ typedef struct PrefixSum{
 typedef struct Part{
   Relation* rel;
   PrefixSum* prefixSum;
+  Hashtable** hashtables;
   ~Part(){
     delete rel;
     delete prefixSum;

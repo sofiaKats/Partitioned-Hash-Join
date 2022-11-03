@@ -10,4 +10,6 @@ public:
   Part* Solve();
   void PartitionRec(Part*, Relation*, int = 0, int = 0, int = 0, int = -1);
   void Merge(Part*, Part*, int);
+  void BuildHashtables(Part*);
+  void PrintHashtables(Part*);
 };

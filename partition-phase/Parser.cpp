@@ -32,6 +32,6 @@ Relation* Parser::Parse(string fileName){
   }
 
   file.close();
-  
+   
   return rel;
 }

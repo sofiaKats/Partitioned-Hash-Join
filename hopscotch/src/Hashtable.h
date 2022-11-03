@@ -27,8 +27,10 @@ private:
     void add_value(int, int, int);
     void remove_value(int, int, int);
     void resize();
+    int findClosestPowerOf2(int);
 public:
-    Hashtable(int, int, int**);
+    //Hashtable(int, int, int**);
+    Hashtable(int);
     void add(int, int);               
     void print_hashtable();
     void Solve();
