@@ -141,5 +141,5 @@ void PartitionedHashJoin::PrintFinalPrefix(Part* finalPart){
 void PartitionedHashJoin::PrintPart(Part* finalPart){
   PrintFinalRelation(finalPart);
   PrintFinalPrefix(finalPart);
-  //PrintHashtables(finalPart);
+  PrintHashtables(finalPart);
 }
