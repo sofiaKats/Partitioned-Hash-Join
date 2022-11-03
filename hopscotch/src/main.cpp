@@ -19,14 +19,14 @@ int main(int argc, char* argv[]) {
         // mock_data column 0: holds a random value
         // mock_data column 1: holds hash value i create to test algorithm cases
         // lets assume that table_size=10
-        int** mock_data = new int*[4100];
-        for(int i=0; i<4100; i++) mock_data[i] = new int[2];
+        // int** mock_data = new int*[4100];
+        // for(int i=0; i<4100; i++) mock_data[i] = new int[2];
 
 
-        for (int i=0; i<4100; i++){
-            mock_data[i][0] = i;
-            mock_data[i][1] = i+3;
-        }
+        // for (int i=0; i<4100; i++){
+        //     mock_data[i][0] = i;
+        //     mock_data[i][1] = i+3;
+        // }
         //random value within [0,99] , pseudo-hash that i assign
         // mock_data[0][0] = 14; mock_data[0][1] = 1;
         // mock_data[1][0] = 67; mock_data[1][1] = 1;
@@ -45,8 +45,10 @@ int main(int argc, char* argv[]) {
         Hashtable* htable = new Hashtable(table_size); //2^12 = 4096 * siexof(tuple) = 64 close to 256K = minimum (L2 CACHE)
 
         //htable->hopscotch_hatching(mock_data);
-        htable->Solve();
+        htable->Solve(table_size);
         htable->print_hashtable();
+
+        delete htable;
 
         // free hashtable memory
         //for (int i=0; i<table_size; i++) delete hashtable[i];

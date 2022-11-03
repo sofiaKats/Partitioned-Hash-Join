@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstring>
-#include "hopscotch.h"
+#include "Index.h"
 
 using namespace std;
 
@@ -31,7 +31,8 @@ private:
 public:
     //Hashtable(int, int, int**);
     Hashtable(int);
+    ~Hashtable();
     void add(int, int);               
     void print_hashtable();
-    void Solve();
+    void Solve(int);
 };

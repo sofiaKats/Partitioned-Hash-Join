@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-#include "hopscotch.h"
+#include "Index.h"
 using namespace std;
 
 Index::Index() : has_value(false)

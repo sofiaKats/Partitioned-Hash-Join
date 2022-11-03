@@ -31,6 +31,13 @@ Hashtable::Hashtable(int tableR_size){
     //cout << "Hashtable size is " << table_size << endl;
 }
 
+Hashtable::~Hashtable(){
+    for (int i = 0; i < table_size; i++){
+        delete hashtable[i];
+    }
+    delete []hashtable;
+}
+
 int Hashtable::findClosestPowerOf2(int number){
     int counter = 0; 
     int power = 1;
@@ -282,8 +289,8 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
     return emptyPos;
 }
 
-void Hashtable::Solve(){
-    for (int counter=8; counter>0; counter--) {
+void Hashtable::Solve(int table_size){
+    for (int counter=0; counter<table_size; counter++) {
         add(counter, counter);
     }
 }

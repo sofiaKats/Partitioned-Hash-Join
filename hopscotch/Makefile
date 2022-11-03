@@ -11,7 +11,7 @@ CFLAGS = -std=c++11 -Wno-unused-parameter -g -w
 EXE_HOPSCOTCH = ./hopscotch
 
 # .o files needed
-OBJS_HOPSCOTCH =  $(SRC)/hopscotch.o $(SRC)/Hashtable.o $(SRC)/main.o
+OBJS_HOPSCOTCH =  $(SRC)/Index.o $(SRC)/Hashtable.o $(SRC)/main.o
 
 # Build executables
 all: $(EXE_HOPSCOTCH)
