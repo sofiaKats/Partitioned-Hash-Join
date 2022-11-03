@@ -23,8 +23,8 @@ Hashtable::Hashtable(int tableR_size){
     this->depth = findClosestPowerOf2(tableR_size);
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
-    if (table_size<32)  H = table_size;
-    else                H = 8;                         //We choose 32 as stated in the origignal paper because it is an entire cache line
+    if (table_size<8)  H = table_size;
+    else                H = 8;                         //We choose 8 as stated in the origignal paper because it is an entire cache line
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
