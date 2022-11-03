@@ -12,4 +12,7 @@ public:
   void Merge(Part*, Part*, int);
   void BuildHashtables(Part*);
   void PrintHashtables(Part*);
+  void PrintFinalRelation(Part*);
+  void PrintFinalPrefix(Part*);
+  void PrintPart(Part*);
 };

@@ -70,10 +70,10 @@ typedef struct Part{
   ~Part(){
     delete rel;
     delete prefixSum;
-    for (int i = 0; i < prefixSum->length; i++){
-      delete[] hashtables[i];
-    }
-    delete[] hashtables;
+    // for (int i = 0; i < prefixSum->length; i++){
+    //   delete[] hashtables[i];
+    // }
+    // delete[] hashtables;
   }
 } Part;
 

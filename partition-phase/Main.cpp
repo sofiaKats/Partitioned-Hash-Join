@@ -11,23 +11,11 @@ int main(int argc, char** argv){
     cout << "[Main] Expected 2 arguments: " << argc - 1 << " provided\n";
   }
   relR = parser->Parse(argv[1]);
+  relS = parser->Parse(argv[2]);
 
   PartitionedHashJoin* phj = new PartitionedHashJoin(relR, relS);
   Part* finalPart = phj->Solve();
 
-  cout << "\n----- Final Relation Table -----\n";
-  for (int i = 0 ; i < finalPart->rel->num_tuples; i++){
-    cout << finalPart->rel->tuples[i].payload << endl;
-  }
-
-  cout << "\n----- Final PrefixSum Table -----\n";
-  for (int i = 0 ; i < finalPart->prefixSum->length; i++){
-    if (finalPart->prefixSum->arr[i+1][1] == 0){
-      cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
-      break;
-    }
-    cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
-  }
   //phj->BuildHashtables(finalPart);
   //phj->PrintHashtables(finalPart);
 

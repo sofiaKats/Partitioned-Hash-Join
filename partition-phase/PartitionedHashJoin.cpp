@@ -11,18 +11,26 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 
 Part* PartitionedHashJoin::Solve(){
   Part* partitionedR = new Part();
-  //Part* partitionedS = new Part();
 
   partitionedR->rel = new Relation(relR->num_tuples);
   partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
 
-  //partitionedS->rel = new Relation(relS->num_tuples);
-  //partitionedS->prefixSum = new PrefixSum(pow(2,2) + 1);
 
   PartitionRec(partitionedR, relR, 2);
-  //PartitionRec(partitionedS, relS);
 
-  return partitionedR;
+  //return partitionedR;
+  BuildHashtables(partitionedR);
+  PrintHashtables(partitionedR);
+
+  Part* partitionedS = new Part();
+  partitionedS->rel = new Relation(relS->num_tuples);
+  partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
+  PartitionRec(partitionedS, relS); 
+
+  PrintPart(partitionedR);
+  cout << "Ready for join query input" << endl; 
+
+  //return partitionedS;
 }
 
  void PartitionedHashJoin::Merge(Part* destPart, Part* part, int from){
@@ -110,4 +118,28 @@ void PartitionedHashJoin::PrintHashtables(Part* part){
 
     if(part->prefixSum->arr[i][0] == -1) break;
   }
+}
+
+void PartitionedHashJoin::PrintFinalRelation(Part* finalPart){
+  cout << "\n----- Final Relation Table -----\n";
+  for (int i = 0 ; i < finalPart->rel->num_tuples; i++){
+    cout << finalPart->rel->tuples[i].payload << endl;
+  }
+}
+
+void PartitionedHashJoin::PrintFinalPrefix(Part* finalPart){
+  cout << "\n----- Final PrefixSum Table -----\n";
+  for (int i = 0 ; i < finalPart->prefixSum->length; i++){
+    if (finalPart->prefixSum->arr[i+1][1] == 0){
+      cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
+      break;
+    }
+    cout << finalPart->prefixSum->arr[i][0] << " : " << finalPart->prefixSum->arr[i][1]<<endl;
+  }
+}
+
+void PartitionedHashJoin::PrintPart(Part* finalPart){
+  PrintFinalRelation(finalPart);
+  PrintFinalPrefix(finalPart);
+  //PrintHashtables(finalPart);
 }
