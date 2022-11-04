@@ -2,6 +2,8 @@
 #include <cstring>
 
 #include "parser.h"
+#include <sstream>
+#include <fstream>
 
 using namespace std;
 
@@ -10,22 +12,38 @@ JoinQuery::JoinQuery(string query) {
 }
 
 int main(int argc, char** argv) {
-    char str[100]; // declare the size of string  
-    strcpy(str, "0 2 4|0.1=1.2&1.0=2.1&0.1>3000|0.0 1.1");
-    cout << "str is: "<< str << endl;    
-    // cout << " Enter a string: " <<endl;  
-    // cin.getline(str, 100); // use getline() function to read a string from input stream  
-      
-    char *ptr; // declare a ptr pointer  
-    ptr = strtok(str, "|"); // use strtok() function to separate string using comma (,) delimiter.  
-    cout << " \n Split string using strtok() function: " << endl;  
-    // use while loop to check ptr is not null  
-    while (ptr != NULL)  
-    {  
-        cout << ptr  << endl; // print the string token  
-        ptr = strtok (NULL, "|");  
-    } 
+    FILE * fp;
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    char *token;
+    const char s[2] = " ";
+
+    fp = fopen("Queries.tbl", "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
+
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("Retrieved line of length %zu:\n", read);
+        printf("%s", line);
+        /* get the first token */
+        token = strtok(line, s);
+        
+        /* walk through other tokens */
+        while( token != NULL) {
+            printf( "token: %s\n", token );
+            int ia = atoi(token);
+            char n2[10] = {0};   //initialize  array
+            sprintf(n2, "%c%d.tbl", 'r', ia);
+            cout << "n2 is " << n2 << endl;
+            
+            token = strtok(NULL, s);
+
+        }
+    }
+
+   
+    fclose(fp); 
     
-    cout << ptr << endl;
     return 0;
 }
