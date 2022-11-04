@@ -145,6 +145,7 @@ void PartitionedHashJoin::PrintPart(Part* finalPart){
 void PartitionedHashJoin::Join(Part* p1, Part* p2){
   for (int i = 0; i < p2->prefixSum->length; i++){
     int hash = p2->prefixSum->arr[i][0];
+    
   }
   for (int i = 0; i < p2->rel->num_tuples; i++){
 
