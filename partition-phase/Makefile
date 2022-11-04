@@ -1,5 +1,5 @@
 EXEC = program
-OBJS = Main.o Partition.o PartitionedHashJoin.o Parser.o ../hopscotch/src/Index.o ../hopscotch/src/Hashtable.o
+OBJS = Main.o Partition.o PartitionedHashJoin.o Parser.o ../hopscotch/src/Index.o ../hopscotch/src/Hashtable.o ../hopscotch/src/parser.o
 CFLAGS = -std=c++11 -Wno-unused-parameter -g -w
 
 $(EXEC): $(OBJS)

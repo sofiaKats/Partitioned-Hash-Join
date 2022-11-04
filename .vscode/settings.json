@@ -11,6 +11,9 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "new": "cpp",
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "*.tcc": "cpp",
+        "string_view": "cpp",
+        "fstream": "cpp"
     }
 }

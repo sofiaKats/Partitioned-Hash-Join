@@ -1,14 +1,7 @@
 #include <iostream>
-#include <cstring>
+#include <dirent.h>
 
 using namespace std;
 
-class JoinQuery {
-private:
-    string RelationIds;
-    string Predicates;
-    string Projections;
-public:
-    JoinQuery(string );
-    ~JoinQuery();
-};
+
+int** readQueries();

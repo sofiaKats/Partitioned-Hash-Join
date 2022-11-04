@@ -1,10 +1,12 @@
 #include "PartitionedHashJoin.h"
 #include "Parser.h"
+#include "../hopscotch/src/parser.h"
 #include <dirent.h>
 
 using namespace std;
 
 int main(int argc, char** argv){
+  
   Parser* parser = new Parser();
   Relation *relR, *relS;
   Relation** relArray;
@@ -44,9 +46,12 @@ int main(int argc, char** argv){
         sprintf(filePath, "%s/%s", in_dir, in_file->d_name);
         relArray[i++] = parser->Parse(filePath);
   }
+  closedir(FD);
+  int** relIdsToJoin = readQueries();
 
-  relR = relArray[0];
-  relS = relArray[1];
+  //return 0;
+  relR = relArray[relIdsToJoin[0][0]];
+  relS = relArray[relIdsToJoin[0][1]];
 
   PartitionedHashJoin* phj = new PartitionedHashJoin(relR, relS);
   Part* finalPart = phj->Solve();
