@@ -66,7 +66,7 @@ typedef struct PrefixSum{
 typedef struct Part{
   Relation* rel;
   PrefixSum* prefixSum;
-  Hashtable** hashtables;
+  Hashtable** hashtables = NULL;
   ~Part(){
     delete rel;
     delete prefixSum;

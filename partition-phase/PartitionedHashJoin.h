@@ -15,4 +15,5 @@ public:
   void PrintFinalRelation(Part*);
   void PrintFinalPrefix(Part*);
   void PrintPart(Part*);
+  void Join(Part*, Part*);
 };

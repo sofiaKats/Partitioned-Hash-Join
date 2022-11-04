@@ -14,8 +14,6 @@ Part* PartitionedHashJoin::Solve(){
 
   partitionedR->rel = new Relation(relR->num_tuples);
   partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
-
-
   PartitionRec(partitionedR, relR, 2);
 
   //return partitionedR;
@@ -27,8 +25,8 @@ Part* PartitionedHashJoin::Solve(){
   partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
   PartitionRec(partitionedS, relS); 
 
-  PrintPart(partitionedR);
-  cout << "Ready for join query input" << endl; 
+  //PrintPart(partitionedR);
+  //cout << "Ready for join query input" << endl; 
 
   return partitionedS;
 }
@@ -142,4 +140,13 @@ void PartitionedHashJoin::PrintPart(Part* finalPart){
   PrintFinalRelation(finalPart);
   PrintFinalPrefix(finalPart);
   PrintHashtables(finalPart);
+}
+
+void PartitionedHashJoin::Join(Part* p1, Part* p2){
+  for (int i = 0; i < p2->prefixSum->length; i++){
+    int hash = p2->prefixSum->arr[i][0];
+  }
+  for (int i = 0; i < p2->rel->num_tuples; i++){
+
+  }
 }
