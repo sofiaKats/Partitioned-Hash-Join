@@ -16,17 +16,18 @@ Part* PartitionedHashJoin::Solve(){
   partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
   PartitionRec(partitionedR, relR, 2);
 
-  //return partitionedR;
   BuildHashtables(partitionedR);
-  PrintHashtables(partitionedR);
+  //PrintHashtables(partitionedR);
 
   Part* partitionedS = new Part();
   partitionedS->rel = new Relation(relS->num_tuples);
   partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
-  PartitionRec(partitionedS, relS); 
+  PartitionRec(partitionedS, relS);
 
+
+  Join(partitionedR, partitionedS);
   //PrintPart(partitionedR);
-  //cout << "Ready for join query input" << endl; 
+  //cout << "Ready for join query input" << endl;
 
   return partitionedS;
 }
@@ -111,7 +112,7 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
 
 void PartitionedHashJoin::PrintHashtables(Part* part){
   for (int i = 1 ; i < part->prefixSum->length; i++){
-    cout << "\n\nHASHTABLE NUMBER: " << i << endl; 
+    cout << "\n\nHASHTABLE NUMBER: " << i << endl;
     part->hashtables[i - 1]->print_hashtable();
 
     if(part->prefixSum->arr[i][0] == -1) break;
@@ -143,11 +144,32 @@ void PartitionedHashJoin::PrintPart(Part* finalPart){
 }
 
 void PartitionedHashJoin::Join(Part* p1, Part* p2){
+  int hashtablesIndex = 0;
+
   for (int i = 0; i < p2->prefixSum->length; i++){
     int hash = p2->prefixSum->arr[i][0];
-    
-  }
-  for (int i = 0; i < p2->rel->num_tuples; i++){
+
+    if (ExistsInPrefix(hash, p1->prefixSum)){
+      for (int j = p2->prefixSum->arr[i][1]; j < p2->prefixSum->arr[i+1][1]; j++){
+        int nei = p1->hashtables[hashtablesIndex]->GetH();
+        int payload = p2->rel->tuples[j].payload;
+        int hashhop = p1->hashtables[hashtablesIndex].hash(value);
+
+        for (int k = hashhop; k < hashhop + nei; k++){
+          if (p1->hashtables[hashtablesIndex]->hashtable[k].payload == payload)
+            cout << "Match : "<< value << " " << " key R : "<< p1->hashtables[k]->get_value() <<" key S : "<< p2->rel->tuples[j].key
+        }
+      }
+    }
 
   }
+
+}
+
+bool PartitionedHashJoin::ExistsInPrefix(int hash, PrefixSum* prefixSum){
+  for (int i = 0; i < prefixSum->length; i++){
+    if (prefixSum->arr[i][0] == hash)
+      return true;
+  }
+  return false;
 }
