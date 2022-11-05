@@ -6,7 +6,7 @@ private:
   Relation* relR;
   Relation* relS;
   void Merge(Part*, Part*, int);
-  bool ExistsInPrefix(int, PrefixSum*);
+  int ExistsInPrefix(int, PrefixSum*);
 
 public:
   PartitionedHashJoin(Relation*, Relation*);
@@ -17,5 +17,5 @@ public:
   void PrintHashtables(Part*);
   void PrintFinalRelation(Part*);
   void PrintFinalPrefix(Part*);
-  void PrintPart(Part*);
+  void PrintPart(Part*, bool);
 };

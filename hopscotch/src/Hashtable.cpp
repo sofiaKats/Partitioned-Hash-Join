@@ -5,32 +5,21 @@
 #include "Hashtable.h"
 using namespace std;
 
-// Hashtable::Hashtable(int table_size, int depth, int** mock_data){
-//     this->emptySpaces = table_size;
-//     this->table_size = table_size;
-//     //this->table_size = findClosestPowerOf2(table_size);
-//     //this->depth = findClosestPowerOf2(table_size);
-//     this->depth = depth;
-
-//     hashtable = new Index*[table_size];
-//     for (int i=0; i<table_size; i++)
-//         hashtable[i] = new Index();
-
-//     this->mock_data = mock_data;
-// }
-
 Hashtable::Hashtable(int tableR_size){
     this->depth = findClosestPowerOf2(tableR_size);
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
-    if (table_size<8)  H = table_size;
+    if (table_size<8)  {
+        if (table_size == 1)  H = 2;
+        else                H = table_size;
+    }
     else                H = 8;                         //We choose 8 as stated in the origignal paper because it is an entire cache line
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
         hashtable[i] = new Index(H);
 
-    //cout << "Hashtable size is " << table_size << endl;
+    //cout << "Hashtable H is " << H << endl;
 }
 
 Hashtable::~Hashtable(){
@@ -59,7 +48,7 @@ int Hashtable::hash(int id){
     int hashed_value = (int) (id*2654435761 % (int)pow(i,j));
 
     hashed_value = hashed_value >> (31-depth);
-    cout << "Hashed value is " << hashed_value << endl;
+    //cout << "Hashed value is " << hashed_value << endl;
     return hashed_value;
 }
 
@@ -109,9 +98,11 @@ int Hashtable::find_empty_index(int i){
     return j;
 }
 
-void Hashtable::add_value(int pos, int value, int hash_value){    
+void Hashtable::add_value(int pos, int value, int hash_value, Tuple2* tuple){    
     hashtable[pos]->set_value(value);
     hashtable[pos]->set_has_value(true);
+
+    hashtable[pos]->setTuple(tuple); //new
 
     //update bitmaps
     int indx;
@@ -126,7 +117,7 @@ void Hashtable::add_value(int pos, int value, int hash_value){
     }
 }
 
-void Hashtable::remove_value(int pos, int value, int hash_value ){
+void Hashtable::remove_value(int pos, int hash_value ){
     //update bitmaps
     int loop = 0;
     int indx;
@@ -175,6 +166,8 @@ bool Hashtable::checkBitmapFull(int index){
 }
 
 void Hashtable::add(int key, int value){
+    Tuple2* tuple = new Tuple2(key, value);
+
     //cout << "to be added " << value << endl;
 
     if (checkHashtableFull()) resize();    
@@ -185,18 +178,19 @@ void Hashtable::add(int key, int value){
         resize();        
         hashed_key = hash(key);
     }
-    while (!insert(hashed_key, value)){
+    
+    while (!insert(hashed_key, value, tuple)){
         cout << "!!!!!!!!!!!!!!resize3" << endl;
         resize();        
         hashed_key = hash(key);
     }     
 }
 
-bool Hashtable::insert(int hashed_key, int value){
+bool Hashtable::insert(int hashed_key, int value, Tuple2* tuple){
     int pos = findPos(hashed_key);
     if (pos == -1) return false;
 
-    add_value(pos, value, hashed_key);
+    add_value(pos, value, hashed_key, tuple);
     emptySpaces--;
     return true;
 }
@@ -215,9 +209,9 @@ int Hashtable::slideLeft(int hashed_key, int emptyPos){
     return emptyPos;    
 }
 
-int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_key){
-    add_value(emptyPos, value, hashed_key);
-    remove_value(swapNeighborPos, value, hashed_key);
+int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_key, Tuple2* tuple){
+    add_value(emptyPos, value, hashed_key, tuple);
+    remove_value(swapNeighborPos, hashed_key);
     emptyPos = swapNeighborPos;
     return emptyPos;
 }
@@ -235,31 +229,6 @@ int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed
     return swapNeighborPos;
 }
 
-// int Hashtable::findSwapNeighbourPos(int emptyPos){
-//     cout << "4" << endl;
-//     int swapNeighborPos=-1;
-//     // a) We find all H-1 positions that have values whose hash value k is in max H-1 distance from j
-//     int bucket;
-//     bool changed = false;
-//     //checking each neighboring bucket's bitmap to find y's original hash value (k)
-//     for (bucket = emptyPos - (H-1); bucket<emptyPos; bucket++){
-//         cout << "5" << endl;        
-//         swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, emptyPos - bucket -1);
-//         cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
-
-//         if (swapNeighborPos!=-1){    
-//             emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()));
-//             cout << "findSwapNeighborPos: empty pos is " << emptyPos << endl;
-//             break;  
-//         }
-//     }
-//     cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
-//     if (!changed) {
-//         cout << "No element y, table need rehashing!" << endl;
-//         return -1;
-//     }
-//     return emptyPos;
-// }
 
 int Hashtable::findSwapNeighbourPos(int emptyPos){
     //cout << "4" << endl;
@@ -276,7 +245,7 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
         //cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
 
         if (swapNeighborPos!=-1){    
-            emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()));
+            emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()), hashtable[swapNeighborPos]->getTuple());
             //cout << "findSwapNeighborPos: empty pos is " << emptyPos << endl;
             break;  
         }
@@ -300,3 +269,7 @@ void Hashtable::Solve(int table_size){
 int Hashtable::findNeighborPosByK(int currPos, int k){
     return (currPos + k + table_size)%table_size;
 }
+
+int Hashtable::GetH(){ return H; }
+
+Index** Hashtable::GetHashtable() {return hashtable;}

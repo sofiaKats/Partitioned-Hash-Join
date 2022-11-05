@@ -11,23 +11,22 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 
 Part* PartitionedHashJoin::Solve(){
   Part* partitionedR = new Part();
-
   partitionedR->rel = new Relation(relR->num_tuples);
   partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
-  PartitionRec(partitionedR, relR, 2);
-
-  BuildHashtables(partitionedR);
-  //PrintHashtables(partitionedR);
+  PartitionRec(partitionedR, relR);
+  //ONLY FOR RELATION R
+  BuildHashtables(partitionedR);  
 
   Part* partitionedS = new Part();
   partitionedS->rel = new Relation(relS->num_tuples);
   partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
   PartitionRec(partitionedS, relS);
 
+  // PrintPart(partitionedR, true);
+  // PrintPart(partitionedS, false);
+
 
   Join(partitionedR, partitionedS);
-  //PrintPart(partitionedR);
-  //cout << "Ready for join query input" << endl;
 
   return partitionedS;
 }
@@ -102,6 +101,7 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
 
     //fill hashtable
     for (int j = 0; j < subRelationSize; j++){
+      cout << "Payload is " << part->rel->tuples[indexR].payload << " and key is " << part->rel->tuples[indexR].key << endl;
       part->hashtables[i - 1]->add(part->rel->tuples[indexR].payload, part->rel->tuples[indexR].payload);
       indexR++;
     }
@@ -112,7 +112,7 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
 
 void PartitionedHashJoin::PrintHashtables(Part* part){
   for (int i = 1 ; i < part->prefixSum->length; i++){
-    cout << "\n\nHASHTABLE NUMBER: " << i << endl;
+    cout << "\n\nHASHTABLE NUMBER: " << i - 1 << endl;
     part->hashtables[i - 1]->print_hashtable();
 
     if(part->prefixSum->arr[i][0] == -1) break;
@@ -137,39 +137,60 @@ void PartitionedHashJoin::PrintFinalPrefix(Part* finalPart){
   }
 }
 
-void PartitionedHashJoin::PrintPart(Part* finalPart){
+void PartitionedHashJoin::PrintPart(Part* finalPart, bool hasHashtables){
   PrintFinalRelation(finalPart);
   PrintFinalPrefix(finalPart);
-  PrintHashtables(finalPart);
+  if (hasHashtables) PrintHashtables(finalPart);
 }
 
 void PartitionedHashJoin::Join(Part* p1, Part* p2){
   int hashtablesIndex = 0;
 
+  //For every partition table
   for (int i = 0; i < p2->prefixSum->length; i++){
+    if (p2->prefixSum->arr[i][0] == -1) break;
+
     int hash = p2->prefixSum->arr[i][0];
+    cout << "P2 tuple with partition hash: " << hash << endl;
 
-    if (ExistsInPrefix(hash, p1->prefixSum)){
+    //if hash value exists in relation R
+    hashtablesIndex = ExistsInPrefix(hash, p1->prefixSum);
+    if (hashtablesIndex!=-1){
+      //For every tuple in this partition
       for (int j = p2->prefixSum->arr[i][1]; j < p2->prefixSum->arr[i+1][1]; j++){
+        //find hash value and neighborhood
         int nei = p1->hashtables[hashtablesIndex]->GetH();
-        int payload = p2->rel->tuples[j].payload;
-        int hashhop = p1->hashtables[hashtablesIndex].hash(value);
+        int payload2 = p2->rel->tuples[j].payload;
+        int hashhop = p1->hashtables[hashtablesIndex]->hash(payload2);
+       
+        int k = hashhop;
 
-        for (int k = hashhop; k < hashhop + nei; k++){
-          if (p1->hashtables[hashtablesIndex]->hashtable[k].payload == payload)
-            cout << "Match : "<< value << " " << " key R : "<< p1->hashtables[k]->get_value() <<" key S : "<< p2->rel->tuples[j].key
+        for (int loops = 0; loops < nei-1 ; loops++){
+          if (p1->hashtables[hashtablesIndex]->GetHashtable()[hashhop]->get_bitmap_index(loops) == 1){
+            //cout << "Here! ";
+            int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[k]->getTuple()->payload;
+            if ( payload1 == payload2){
+            //if (p1->hashtables[hashtablesIndex]->GetHashtable()[k]->get_value() == payload){
+              cout << "------------Match: " << payload2 << " key R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[k]->getTuple()->key << " key S: " << p2->rel->tuples[j].key << endl;
+            }
+          }
+          k = p1->hashtables[hashtablesIndex]->findNeighborPosByK(k, 1); 
         }
       }
+      //hashtablesIndex++;
     }
-
+    else cout << "------------No tuples in relation R for partition hash " << hash << endl;
   }
-
 }
 
-bool PartitionedHashJoin::ExistsInPrefix(int hash, PrefixSum* prefixSum){
+
+
+int PartitionedHashJoin::ExistsInPrefix(int hash, PrefixSum* prefixSum){
   for (int i = 0; i < prefixSum->length; i++){
-    if (prefixSum->arr[i][0] == hash)
-      return true;
+    if (prefixSum->arr[i][0] == -1) return -1;
+    if (prefixSum->arr[i][0] == hash){ 
+      return i;
+    }
   }
-  return false;
+  return -1;
 }

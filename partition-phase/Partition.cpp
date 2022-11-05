@@ -9,7 +9,7 @@ Partition::Partition(Relation* rel, int n, int from, int to){
 
 int Partition::Hash(int key, int n){
   uint32_t tmp = key << (32 - n);
-  return tmp >> (32 - n);
+  return tmp >> (32 - n); 
 }
 
 Part* Partition::BuildPartitionedTable(){

@@ -10,6 +10,7 @@ Index::Index(int H) : has_value(false)
     // initializing bitmap with 0s
     for (int i=0; i<H; i++) bitmap[i] = 0;
     this->H = H;
+    //tuple = new Tuple();
 }
 
 Index::~Index()
@@ -21,7 +22,7 @@ void Index::set_bitmap_index_to_1(const int index) { bitmap[index] = 1;}
 
 void Index::set_bitmap_index_to_0(const int index) { bitmap[index] = 0; }
 
-int Index::get_bitmap_index(const int index) { return bitmap[index]; }
+int Index::get_bitmap_index(const int index) {return bitmap[index]; }
 
 bool Index::get_has_value(void) { return has_value; }
 
@@ -49,3 +50,7 @@ int temp_find_hash(int value, int** mock_data){
     }
     return -1;
 }
+
+Tuple2* Index::getTuple(){ return tuple;}
+
+void Index::setTuple(Tuple2* t) {this->tuple = t;}
