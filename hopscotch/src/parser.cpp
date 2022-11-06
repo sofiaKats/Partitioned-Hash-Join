@@ -54,6 +54,4 @@ int** readQueries(){
    
     fclose(fp); 
     return relIdsToJoin;
-    
-    return 0;
 }

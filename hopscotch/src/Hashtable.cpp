@@ -10,10 +10,10 @@ Hashtable::Hashtable(int tableR_size){
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
     if (table_size<8)  {
-        if (table_size == 1)  H = 2;
-        else                H = table_size;
+        if (table_size == 1)    H = 2;
+        else                    H = table_size;
     }
-    else                H = 8;                         //We choose 8 as stated in the origignal paper because it is an entire cache line
+    else                        H = 8;                         
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
@@ -165,53 +165,53 @@ bool Hashtable::checkBitmapFull(int index){
     return hashtable[index]->is_bitmap_full();
 }
 
-void Hashtable::add(int key, int value){
-    Tuple2* tuple = new Tuple2(key, value);
+void Hashtable::add(int payload, int value){
+    Tuple2* tuple = new Tuple2(value, payload);
 
     //cout << "to be added " << value << endl;
 
     if (checkHashtableFull()) resize();    
-    int hashed_key = hash(key);
+    int hashed_payload = hash(payload);
     
-    while (checkBitmapFull(hashed_key)) {
+    while (checkBitmapFull(hashed_payload)) {
         cout << "!!!!!!!!!!!!!!Resize2" << endl;
         resize();        
-        hashed_key = hash(key);
+        hashed_payload = hash(payload);
     }
     
-    while (!insert(hashed_key, value, tuple)){
+    while (!insert(hashed_payload, value, tuple)){
         cout << "!!!!!!!!!!!!!!resize3" << endl;
         resize();        
-        hashed_key = hash(key);
+        hashed_payload = hash(payload);
     }     
 }
 
-bool Hashtable::insert(int hashed_key, int value, Tuple2* tuple){
-    int pos = findPos(hashed_key);
+bool Hashtable::insert(int hashed_payload, int value, Tuple2* tuple){
+    int pos = findPos(hashed_payload);
     if (pos == -1) return false;
 
-    add_value(pos, value, hashed_key, tuple);
+    add_value(pos, value, hashed_payload, tuple);
     emptySpaces--;
     return true;
 }
 
-int Hashtable::findPos(int hashed_key){
-    int emptyPos = find_empty_index(hashed_key);
-    return slideLeft(hashed_key, emptyPos);  
+int Hashtable::findPos(int hashed_payload){
+    int emptyPos = find_empty_index(hashed_payload);
+    return slideLeft(hashed_payload, emptyPos);  
 }
 
-int Hashtable::slideLeft(int hashed_key, int emptyPos){
-    while( ((emptyPos-hashed_key) % table_size) >= H ) {
+int Hashtable::slideLeft(int hashed_payload, int emptyPos){
+    while( ((emptyPos-hashed_payload) % table_size) >= H ) {
         emptyPos = findSwapNeighbourPos(emptyPos);
-        //cout << "SlideLeft: emptyPos is " << emptyPos << " hashed key is " << hashed_key << endl;
+        //cout << "SlideLeft: emptyPos is " << emptyPos << " hashed payload is " << hashed_payload << endl;
         if (emptyPos == -1) return emptyPos;
     }
     return emptyPos;    
 }
 
-int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_key, Tuple2* tuple){
-    add_value(emptyPos, value, hashed_key, tuple);
-    remove_value(swapNeighborPos, hashed_key);
+int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_payload, Tuple2* tuple){
+    add_value(emptyPos, value, hashed_payload, tuple);
+    remove_value(swapNeighborPos, hashed_payload);
     emptyPos = swapNeighborPos;
     return emptyPos;
 }

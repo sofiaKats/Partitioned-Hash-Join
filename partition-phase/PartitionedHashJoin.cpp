@@ -102,7 +102,7 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
     //fill hashtable
     for (int j = 0; j < subRelationSize; j++){
       cout << "Payload is " << part->rel->tuples[indexR].payload << " and key is " << part->rel->tuples[indexR].key << endl;
-      part->hashtables[i - 1]->add(part->rel->tuples[indexR].payload, part->rel->tuples[indexR].payload);
+      part->hashtables[i - 1]->add(part->rel->tuples[indexR].payload, part->rel->tuples[indexR].key);
       indexR++;
     }
 
