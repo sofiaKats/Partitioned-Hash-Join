@@ -2,8 +2,6 @@
 #include <cstring>
 using namespace std;
 
-//#define H 2 
-#define L2_SIZE 256000
 
 typedef struct Tuple2{
     int key;
@@ -26,8 +24,8 @@ private:
 public:
     Index(int);
     ~Index();
-    void set_bitmap_index_to_1(const int index); 
-    void set_bitmap_index_to_0(const int index); 
+    void set_bitmap_index_to_1(const int index);
+    void set_bitmap_index_to_0(const int index);
     int  get_bitmap_index(const int index);
     void print_bitmap(void);
     bool get_has_value(void);

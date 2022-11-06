@@ -14,7 +14,7 @@ private:
 
     int** mock_data;
 
-    
+
     bool checkHashtableFull();
     bool checkBitmapFull(int);
     bool insert(int, int, Tuple2*);
@@ -29,10 +29,9 @@ private:
     void resize();
     int findClosestPowerOf2(int);
 public:
-    //Hashtable(int, int, int**);
     Hashtable(int);
     ~Hashtable();
-    void add(int, int);               
+    void add(int, int);
     void print_hashtable();
     void Solve(int);
     int GetH();

@@ -15,16 +15,15 @@ Part* PartitionedHashJoin::Solve(){
   partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
   PartitionRec(partitionedR, relR);
   //ONLY FOR RELATION R
-  BuildHashtables(partitionedR);  
+  BuildHashtables(partitionedR);
 
   Part* partitionedS = new Part();
   partitionedS->rel = new Relation(relS->num_tuples);
   partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
   PartitionRec(partitionedS, relS);
 
-  // PrintPart(partitionedR, true);
-  // PrintPart(partitionedS, false);
-
+   PrintPart(partitionedR, true);
+   PrintPart(partitionedS, false);
 
   Join(partitionedR, partitionedS);
 
@@ -101,7 +100,7 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
 
     //fill hashtable
     for (int j = 0; j < subRelationSize; j++){
-      cout << "Payload is " << part->rel->tuples[indexR].payload << " and key is " << part->rel->tuples[indexR].key << endl;
+      //cout << "Payload is " << part->rel->tuples[indexR].payload << " and key is " << part->rel->tuples[indexR].key << endl;
       part->hashtables[i - 1]->add(part->rel->tuples[indexR].payload, part->rel->tuples[indexR].key);
       indexR++;
     }
@@ -155,29 +154,26 @@ void PartitionedHashJoin::Join(Part* p1, Part* p2){
 
     //if hash value exists in relation R
     hashtablesIndex = ExistsInPrefix(hash, p1->prefixSum);
-    if (hashtablesIndex!=-1){
+    if (hashtablesIndex != -1){
       //For every tuple in this partition
       for (int j = p2->prefixSum->arr[i][1]; j < p2->prefixSum->arr[i+1][1]; j++){
         //find hash value and neighborhood
         int nei = p1->hashtables[hashtablesIndex]->GetH();
         int payload2 = p2->rel->tuples[j].payload;
         int hashhop = p1->hashtables[hashtablesIndex]->hash(payload2);
-       
-        int k = hashhop;
+
+        int currentBucket = hashhop;
 
         for (int loops = 0; loops < nei-1 ; loops++){
           if (p1->hashtables[hashtablesIndex]->GetHashtable()[hashhop]->get_bitmap_index(loops) == 1){
-            //cout << "Here! ";
-            int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[k]->getTuple()->payload;
-            if ( payload1 == payload2){
-            //if (p1->hashtables[hashtablesIndex]->GetHashtable()[k]->get_value() == payload){
+            int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->payload;
+            if (payload1 == payload2){
               cout << "------------Match: " << payload2 << " key R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[k]->getTuple()->key << " key S: " << p2->rel->tuples[j].key << endl;
             }
           }
-          k = p1->hashtables[hashtablesIndex]->findNeighborPosByK(k, 1); 
+          currentBucket = p1->hashtables[hashtablesIndex]->findNeighborPosByK(currentBucket, 1);
         }
       }
-      //hashtablesIndex++;
     }
     else cout << "------------No tuples in relation R for partition hash " << hash << endl;
   }
@@ -188,7 +184,7 @@ void PartitionedHashJoin::Join(Part* p1, Part* p2){
 int PartitionedHashJoin::ExistsInPrefix(int hash, PrefixSum* prefixSum){
   for (int i = 0; i < prefixSum->length; i++){
     if (prefixSum->arr[i][0] == -1) return -1;
-    if (prefixSum->arr[i][0] == hash){ 
+    if (prefixSum->arr[i][0] == hash){
       return i;
     }
   }
