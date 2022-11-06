@@ -3,14 +3,14 @@
 ### How to compile and execute:
 cd main\
 chmod +x compile_execute\
-./compile_execute <ονομα φακελου εισόδου> π.χ. ./compile_execute ./Tests\
+./compile_execute <ονομα φακελου εισόδου> π.χ. ./compile_execute ./Tests
 
-ή\
+ή
 
 cd main\
 make\
 execute with: ./program ./Tests\
-make clean\
+make clean
 
 Το πρόγραμμα χωρίζεται σε δύο φάσεις:
 
