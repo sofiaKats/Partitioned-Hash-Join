@@ -68,7 +68,6 @@ typedef struct Part{
   PrefixSum* prefixSum = NULL;
   Hashtable** hashtables = NULL;
   ~Part(){
-    delete rel;
     if (hashtables != NULL){
       for (int i = 0; i < prefixSum->length - 1; i++){
         if(prefixSum->arr[i][0]==-1) break;
@@ -79,6 +78,7 @@ typedef struct Part{
     else
       delete hashtables;
     delete prefixSum;
+    delete rel;
   }
 } Part;
 

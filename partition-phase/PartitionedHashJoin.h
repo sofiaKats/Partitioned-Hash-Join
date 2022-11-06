@@ -1,7 +1,7 @@
 #include "Partition.h"
 
 #define MAX_PASSES 2
-#define N 0
+#define N 2
 
 class PartitionedHashJoin {
 private:

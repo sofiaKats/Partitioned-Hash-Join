@@ -9,14 +9,16 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 
 void PartitionedHashJoin::Solve(){
   Part* partitionedR = new Part();
+  partitionedR->rel = new Relation(relR->num_tuples);
   int passCount = PartitionRec(partitionedR, relR);
   //ONLY FOR RELATION R
   BuildHashtables(partitionedR);
 
   Part* partitionedS = new Part();
+  partitionedS->rel = new Relation(relS->num_tuples);
   PartitionRec(partitionedS, relS, passCount);
 
-  PrintPart(partitionedR, true);
+  //PrintPart(partitionedR, true);
   //PrintPart(partitionedS, false);
 
   Join(partitionedR, partitionedS);
@@ -31,17 +33,14 @@ void PartitionedHashJoin::Solve(){
    int base = 0;
 
    //Merge Relation table
-   if (destPart->rel == NULL){
-     destPart->rel = new Relation(relR->num_tuples);
-   }
    for (int i = from; i < from + part->rel->num_tuples; i++){
      destPart->rel->tuples[i] = part->rel->tuples[partIndex++];
    }
 
    //Merge PrefixSum table
-   if (destPart->prefixSum == NULL){
-     destPart->prefixSum = new PrefixSum(pow(2, n) + 1);
-   }
+   if (destPart->prefixSum == NULL)
+      destPart->prefixSum = new PrefixSum(pow(2, n) + 1);
+
    for (index = 1; destPart->prefixSum->arr[index][1] != 0; index++);
    if (index == 1) index = 0; // if second element's start index is 0 then first is as well.
    else{ //get end position of previous prefix sum table to continue from
@@ -54,7 +53,6 @@ void PartitionedHashJoin::Solve(){
      destPart->prefixSum->arr[i][0] = part->prefixSum->arr[partIndex][0];
      destPart->prefixSum->arr[i][1] = part->prefixSum->arr[partIndex++][1] + base;
    }
-
 }
 
 int PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int maxPasses, int n, int passNum, int from, int to){
