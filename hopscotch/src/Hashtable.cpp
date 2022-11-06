@@ -11,8 +11,9 @@ Hashtable::Hashtable(int tableR_size){
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
     if (table_size<8)  {
-        if (table_size == 1)    {H = 2;}
-        else                    H = table_size;
+        // if (table_size == 1)    {H = 2;}
+        // else                    H = table_size;
+        H = table_size;
     }
     else                        H = 8;
 
