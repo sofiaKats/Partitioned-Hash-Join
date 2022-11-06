@@ -36,7 +36,7 @@ Relation* Parser::ParseRelation(string fileName){
   return rel;
 }
 
-Relation** Parser::readRelations(char* in_dir){
+Relation** Parser::ReadRelations(char* in_dir, int& length){
   DIR* FD;
   struct dirent* in_file;
   FILE* entry_file;
@@ -73,7 +73,7 @@ Relation** Parser::readRelations(char* in_dir){
   return relArray;
 }
 
-int** Parser::readQueries(int& numLines){
+int** Parser::ReadQueries(int& numLines){
     FILE * fp;
     char * line = NULL;
     size_t len = 0;
@@ -91,7 +91,6 @@ int** Parser::readQueries(int& numLines){
         if (read == 0) break;
         ++numLines;
     }
-    cout << "readQueries!\n";
 
     int** relIdsToJoin = new int*[numLines];
     numLines = 0;
@@ -112,7 +111,6 @@ int** Parser::readQueries(int& numLines){
             token = strtok(NULL, s);
 
         }
-        cout << "ids are : " << relIdsToJoin[numLines][0] << relIdsToJoin[numLines][1] << endl;
         numLines++;
     }
 

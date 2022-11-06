@@ -5,8 +5,10 @@
 #include <dirent.h>
 
 class Parser{
-public:
-  Relation** readRelations(char*);
-  int** readQueries(int&);
+private:
   Relation* ParseRelation(string);
+
+public:
+  Relation** ReadRelations(char*, int&);
+  int** ReadQueries(int&);
 };
