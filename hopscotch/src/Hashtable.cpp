@@ -221,8 +221,6 @@ int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashe
 }
 
 int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed, int loops){
-    //cout << "We will do " << loops << " loops " << endl;
-    //cout << "CheckBucketBitmap: bucket is " << bucket << endl;
     for (int bit_pos = 0; bit_pos < loops; bit_pos++){
         if(hashtable[bucket]->get_bitmap_index(bit_pos) == 1){
             changed = true;
@@ -246,7 +244,6 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
 
         //cout << "5" << endl;
         swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, posLeftToCheckBitmaps);
-        //cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
 
         if (swapNeighborPos!=-1){
             emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()), hashtable[swapNeighborPos]->getTuple());
@@ -256,7 +253,6 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
         bucket = findNeighborPosByK(bucket, 1);
         posLeftToCheckBitmaps--;
     }
-    //cout << "Changed: " << changed << " npos: " << swapNeighborPos <<endl;
     if (!changed) {
         cout << "No element y, table need rehashing!" << endl;
         return -1;
@@ -264,16 +260,27 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
     return emptyPos;
 }
 
-void Hashtable::Solve(int table_size){
-    for (int counter=0; counter<table_size; counter++) {
-        add(counter, counter);
-    }
-}
 
 int Hashtable::findNeighborPosByK(int currPos, int k){
     return (currPos + k + table_size)%table_size;
 }
 
-int Hashtable::GetH(){ return H; }
+void Hashtable::contains(Tuple2* tuple){
+    //find hash value and neighborhood
+    int nei = H;
+    int payload2 = tuple->payload;
+    int hashhop = hash(payload2);
 
-Index** Hashtable::GetHashtable() {return hashtable;}
+    int currentBucket = hashhop;
+
+    for (int loops = 0; loops < nei ; loops++){
+        if (hashtable[hashhop]->get_bitmap_index(loops) == 1){
+        int payload1 = hashtable[currentBucket]->getTuple()->payload;
+
+        if (payload1 == payload2){
+            cout << "------- Match: " << payload2 << " RowId R: " << hashtable[currentBucket]->getTuple()->key << " RowId S: " << tuple->key << " -------\n";
+        }
+        }
+        currentBucket = findNeighborPosByK(currentBucket, 1);
+    }
+}

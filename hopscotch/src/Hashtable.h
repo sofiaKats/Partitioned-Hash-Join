@@ -12,9 +12,8 @@ private:
     int H;
     Index** hashtable;
 
-    int** mock_data;
-
-
+    int hash(int);
+    int findNeighborPosByK(int, int);
     bool checkHashtableFull();
     bool checkBitmapFull(int);
     bool insert(int, int, Tuple2*);
@@ -33,9 +32,5 @@ public:
     ~Hashtable();
     void add(int, int);
     void print_hashtable();
-    void Solve(int);
-    int GetH();
-    int hash(int);
-    Index** GetHashtable();
-    int findNeighborPosByK(int, int);
+    void contains(Tuple2*); 
 };

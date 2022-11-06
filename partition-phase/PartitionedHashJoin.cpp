@@ -110,6 +110,45 @@ void PartitionedHashJoin::BuildHashtables(Part* part){
   }
 }
 
+// void PartitionedHashJoin::Join(Part* p1, Part* p2){
+//   cout << "\n------- JOINING RELATIONS -------\n\n";
+//   int hashtablesIndex = 0;
+
+//   //For every partition table
+//   for (int i = 0; i < p2->prefixSum->length; i++){
+//     if (p2->prefixSum->arr[i][0] == -1) break;
+
+//     int hash = p2->prefixSum->arr[i][0];
+//     //cout << "P2 tuple with partition hash: " << hash << endl;
+
+//     //if hash value exists in relation R
+//     hashtablesIndex = ExistsInPrefix(hash, p1->prefixSum);
+
+//     if (hashtablesIndex != -1){
+//       //For every tuple in this partition
+//       for (int j = p2->prefixSum->arr[i][1]; j < p2->prefixSum->arr[i+1][1]; j++){
+//         //find hash value and neighborhood
+//         int nei = p1->hashtables[hashtablesIndex]->GetH();
+//         int payload2 = p2->rel->tuples[j].payload;
+//         int hashhop = p1->hashtables[hashtablesIndex]->hash(payload2);
+
+//         int currentBucket = hashhop;
+
+//         for (int loops = 0; loops < nei ; loops++){
+//           if (p1->hashtables[hashtablesIndex]->GetHashtable()[hashhop]->get_bitmap_index(loops) == 1){
+//             int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->payload;
+
+//             if (payload1 == payload2){
+//               cout << "------- Match: " << payload2 << " RowId R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->key << " RowId S: " << p2->rel->tuples[j].key << " -------\n";
+//             }
+//           }
+//           currentBucket = p1->hashtables[hashtablesIndex]->findNeighborPosByK(currentBucket, 1);
+//         }
+//       }
+//     }
+//     else cout << "------- No tuples in Relation R for partition hash " << hash << " -------" << endl;
+//   }
+// }
 void PartitionedHashJoin::Join(Part* p1, Part* p2){
   cout << "\n------- JOINING RELATIONS -------\n\n";
   int hashtablesIndex = 0;
@@ -127,26 +166,12 @@ void PartitionedHashJoin::Join(Part* p1, Part* p2){
     if (hashtablesIndex != -1){
       //For every tuple in this partition
       for (int j = p2->prefixSum->arr[i][1]; j < p2->prefixSum->arr[i+1][1]; j++){
-        //find hash value and neighborhood
-        int nei = p1->hashtables[hashtablesIndex]->GetH();
-        int payload2 = p2->rel->tuples[j].payload;
-        int hashhop = p1->hashtables[hashtablesIndex]->hash(payload2);
-
-        int currentBucket = hashhop;
-
-        for (int loops = 0; loops < nei ; loops++){
-          if (p1->hashtables[hashtablesIndex]->GetHashtable()[hashhop]->get_bitmap_index(loops) == 1){
-            int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->payload;
-
-            if (payload1 == payload2){
-              cout << "------- Match: " << payload2 << " RowId R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->key << " RowId S: " << p2->rel->tuples[j].key << " -------\n";
-            }
-          }
-          currentBucket = p1->hashtables[hashtablesIndex]->findNeighborPosByK(currentBucket, 1);
-        }
+        Tuple2* tuple2 = new Tuple2(p2->rel->tuples[j].key, p2->rel->tuples[j].payload);
+        p1->hashtables[hashtablesIndex]->contains(tuple2);
+        delete tuple2;
       }
     }
-    else cout << "------- No tuples in Relation R for partition hash " << hash << " -------" << endl;
+    //else cout << "------- No tuples in Relation R for partition hash " << hash << " -------" << endl;
   }
 }
 
