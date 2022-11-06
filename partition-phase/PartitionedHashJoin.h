@@ -10,12 +10,12 @@ private:
 
 public:
   PartitionedHashJoin(Relation*, Relation*);
-  Part* Solve();
+  void Solve();
   void PartitionRec(Part*, Relation*, int = 0, int = 0, int = 0, int = -1);
   void BuildHashtables(Part*);
   void Join(Part*, Part*);
   void PrintHashtables(Part*);
-  void PrintFinalRelation(Part*);
-  void PrintFinalPrefix(Part*);
-  void PrintPart(Part*, bool);
+  void PrintRelation(Relation*);
+  void PrintPrefix(PrefixSum*);
+  void PrintPart(Part*, bool = false);
 };

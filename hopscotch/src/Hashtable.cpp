@@ -7,14 +7,14 @@ using namespace std;
 
 Hashtable::Hashtable(int tableR_size){
     this->depth = findClosestPowerOf2(tableR_size);
-    cout << "Depth is " << tableR_size << endl;
+    //cout << "Depth is " << tableR_size << endl;
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
     if (table_size<8)  {
         if (table_size == 1)    {H = 2;}
         else                    H = table_size;
     }
-    else                        H = 8;                         
+    else                        H = 8;
 
     hashtable = new Index*[table_size];
     for (int i=0; i<table_size; i++)
@@ -27,17 +27,17 @@ Hashtable::~Hashtable(){
     for (int i = 0; i < table_size; i++){
         delete hashtable[i];
     }
-    delete []hashtable;
+    delete[] hashtable;
 }
 
 int Hashtable::findClosestPowerOf2(int number){
-    int counter = 0; 
+    int counter = 0;
     int power = 1;
     while(power < number){
         power*=2;
         counter++;
     }
-    
+
     //cout << "Power is " << counter << endl;
     return counter;
 }
@@ -59,7 +59,7 @@ void Hashtable::print_hashtable() {
         if (hashtable[bucket]->get_has_value()) cout << "   " << hashtable[bucket]->get_value();
         else cout << "   " << 0;
     }
-    
+
     cout << endl << "\n Corresponding bitmaps: " << endl;
     for(int bucket = 0; bucket < table_size; bucket++) {
         cout << "BUCKET " << bucket << " with value:  ";
@@ -99,7 +99,7 @@ int Hashtable::find_empty_index(int i){
     return j;
 }
 
-void Hashtable::add_value(int pos, int value, int hash_value, Tuple2* tuple){    
+void Hashtable::add_value(int pos, int value, int hash_value, Tuple2* tuple){
     hashtable[pos]->set_value(value);
     hashtable[pos]->set_has_value(true);
 
@@ -128,9 +128,9 @@ void Hashtable::remove_value(int pos, int hash_value ){
             hashtable[indx]->set_bitmap_index_to_0(loop);
         }
         loop++;
-    } 
+    }
     hashtable[pos]->set_value(0);
-    hashtable[pos]->set_has_value(false); 
+    hashtable[pos]->set_has_value(false);
 }
 
 
@@ -145,9 +145,9 @@ void Hashtable::resize(){
     this->hashtable = new Index*[this->table_size];
     for (int i=0; i<this->table_size; i++)
         this->hashtable[i] = new Index(H);
-    
-    this->emptySpaces = this->table_size;    
-    
+
+    this->emptySpaces = this->table_size;
+
     //re-entering the previous elements
     for (int i=0; i < table_size_old; i++){
         //cout << "Payload old " << hashtable_old[i]->getTuple()->payload << " key old " << hashtable_old[i]->getTuple()->key << endl;
@@ -157,7 +157,7 @@ void Hashtable::resize(){
     }
 
     for (int i=0; i<table_size_old; i++) delete hashtable_old[i];
-    delete [] hashtable_old;   
+    delete [] hashtable_old;
 }
 
 
@@ -174,20 +174,20 @@ void Hashtable::add(int payload, int value){
 
     //cout << "to be added " << value << endl;
 
-    if (checkHashtableFull()) resize();    
+    if (checkHashtableFull()) resize();
     int hashed_payload = hash(payload);
-    
+
     while (checkBitmapFull(hashed_payload)) {
         cout << "!!!!!!!!!!!!!!Resize2" << endl;
-        resize();        
+        resize();
         hashed_payload = hash(payload);
     }
-    
+
     while (!insert(hashed_payload, value, tuple)){
         cout << "!!!!!!!!!!!!!!resize3" << endl;
-        resize();        
+        resize();
         hashed_payload = hash(payload);
-    }     
+    }
 }
 
 bool Hashtable::insert(int hashed_payload, int value, Tuple2* tuple){
@@ -201,7 +201,7 @@ bool Hashtable::insert(int hashed_payload, int value, Tuple2* tuple){
 
 int Hashtable::findPos(int hashed_payload){
     int emptyPos = find_empty_index(hashed_payload);
-    return slideLeft(hashed_payload, emptyPos);  
+    return slideLeft(hashed_payload, emptyPos);
 }
 
 int Hashtable::slideLeft(int hashed_payload, int emptyPos){
@@ -210,7 +210,7 @@ int Hashtable::slideLeft(int hashed_payload, int emptyPos){
         //cout << "SlideLeft: emptyPos is " << emptyPos << " hashed payload is " << hashed_payload << endl;
         if (emptyPos == -1) return emptyPos;
     }
-    return emptyPos;    
+    return emptyPos;
 }
 
 int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashed_payload, Tuple2* tuple){
@@ -223,11 +223,11 @@ int Hashtable::swapEmpty(int emptyPos, int swapNeighborPos, int value, int hashe
 int Hashtable::checkBucketBitmap(int bucket, int& swapNeighborPos, bool& changed, int loops){
     //cout << "We will do " << loops << " loops " << endl;
     //cout << "CheckBucketBitmap: bucket is " << bucket << endl;
-    for (int bit_pos = 0; bit_pos < loops; bit_pos++){ 
+    for (int bit_pos = 0; bit_pos < loops; bit_pos++){
         if(hashtable[bucket]->get_bitmap_index(bit_pos) == 1){
             changed = true;
             swapNeighborPos = findNeighborPosByK(bucket, bit_pos);
-            break;                        
+            break;
         }
     }
     return swapNeighborPos;
@@ -242,16 +242,16 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
     int bucket = emptyPos - (H-1);
     bool changed = false;
     //checking each neighboring bucket's bitmap to find y's original hash value (k)
-    for (int i = 0; i< H - 1; i++){        
-        
-        //cout << "5" << endl;        
+    for (int i = 0; i< H - 1; i++){
+
+        //cout << "5" << endl;
         swapNeighborPos = checkBucketBitmap(bucket, swapNeighborPos, changed, posLeftToCheckBitmaps);
         //cout << "findSwapNeighborPos: empty pos is " << swapNeighborPos << endl;
 
-        if (swapNeighborPos!=-1){    
+        if (swapNeighborPos!=-1){
             emptyPos = swapEmpty(emptyPos, swapNeighborPos, hashtable[swapNeighborPos]->get_value(), hash(hashtable[swapNeighborPos]->get_value()), hashtable[swapNeighborPos]->getTuple());
             //cout << "findSwapNeighborPos: empty pos is " << emptyPos << endl;
-            break;  
+            break;
         }
         bucket = findNeighborPosByK(bucket, 1);
         posLeftToCheckBitmaps--;

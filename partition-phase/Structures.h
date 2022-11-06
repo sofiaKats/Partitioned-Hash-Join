@@ -69,11 +69,15 @@ typedef struct Part{
   Hashtable** hashtables = NULL;
   ~Part(){
     delete rel;
+    if (hashtables != NULL){
+      for (int i = 0; i < prefixSum->length - 1; i++){
+        delete hashtables[i];
+      }
+      delete[] hashtables;
+    }
+    else
+      delete hashtables;
     delete prefixSum;
-    // for (int i = 0; i < prefixSum->length; i++){
-    //   delete hashtables[i];
-    // }
-    // delete[] hashtables;
   }
 } Part;
 
