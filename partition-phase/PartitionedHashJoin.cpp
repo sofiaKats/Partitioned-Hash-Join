@@ -22,8 +22,8 @@ Part* PartitionedHashJoin::Solve(){
   partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
   PartitionRec(partitionedS, relS);
 
-   PrintPart(partitionedR, true);
-   PrintPart(partitionedS, false);
+  //  PrintPart(partitionedR, true);
+  //  PrintPart(partitionedS, false);
 
   Join(partitionedR, partitionedS);
 
@@ -164,11 +164,12 @@ void PartitionedHashJoin::Join(Part* p1, Part* p2){
 
         int currentBucket = hashhop;
 
-        for (int loops = 0; loops < nei-1 ; loops++){
+        for (int loops = 0; loops < nei ; loops++){
           if (p1->hashtables[hashtablesIndex]->GetHashtable()[hashhop]->get_bitmap_index(loops) == 1){
             int payload1 = p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->payload;
+
             if (payload1 == payload2){
-              cout << "------------Match: " << payload2 << " key R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[k]->getTuple()->key << " key S: " << p2->rel->tuples[j].key << endl;
+              cout << "------------Match: " << payload2 << " key R: " << p1->hashtables[hashtablesIndex]->GetHashtable()[currentBucket]->getTuple()->key << " key S: " << p2->rel->tuples[j].key << endl;
             }
           }
           currentBucket = p1->hashtables[hashtablesIndex]->findNeighborPosByK(currentBucket, 1);

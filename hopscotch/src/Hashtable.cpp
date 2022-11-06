@@ -7,10 +7,11 @@ using namespace std;
 
 Hashtable::Hashtable(int tableR_size){
     this->depth = findClosestPowerOf2(tableR_size);
+    cout << "Depth is " << tableR_size << endl;
     this->table_size = pow(2,depth);
     this->emptySpaces = table_size;
     if (table_size<8)  {
-        if (table_size == 1)    H = 2;
+        if (table_size == 1)    {H = 2;}
         else                    H = table_size;
     }
     else                        H = 8;                         
@@ -19,7 +20,7 @@ Hashtable::Hashtable(int tableR_size){
     for (int i=0; i<table_size; i++)
         hashtable[i] = new Index(H);
 
-    //cout << "Hashtable H is " << H << endl;
+    //cout << "Hashtable size is " << table_size << endl;
 }
 
 Hashtable::~Hashtable(){
@@ -86,7 +87,7 @@ int Hashtable::find_empty_index(int i){
         // but since we treat this hashtable as a cycle, we also check from the start of the table until tehe position i-1
 
         //COULD BE DONE MORE EFFICIENTLY WITH MOD!
-        for(int bucket=0; bucket<i-1; bucket++)
+        for(int bucket=0; bucket<i; bucket++)
         {
             //cout << "2" << endl;
             if(hashtable[bucket]->get_has_value() == false){
@@ -148,8 +149,11 @@ void Hashtable::resize(){
     this->emptySpaces = this->table_size;    
     
     //re-entering the previous elements
-    for (int i=0; i<table_size_old; i++){
-        if (hashtable_old[i]->get_has_value())  add(hashtable_old[i]->get_value(), hashtable_old[i]->get_value());
+    for (int i=0; i < table_size_old; i++){
+        //cout << "Payload old " << hashtable_old[i]->getTuple()->payload << " key old " << hashtable_old[i]->getTuple()->key << endl;
+        if (hashtable_old[i]->get_has_value())  {
+            add(hashtable_old[i]->getTuple()->payload, hashtable_old[i]->getTuple()->key);
+        }
     }
 
     for (int i=0; i<table_size_old; i++) delete hashtable_old[i];

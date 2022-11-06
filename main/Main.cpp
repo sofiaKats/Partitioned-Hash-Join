@@ -19,7 +19,7 @@ int main(int argc, char** argv){
   int** relIdsToJoin = parser->readQueries(relIdsCount);
 
   for (int i = 0; i < relIdsCount; i++){
-    cout << "---- Running Query no: " << i << " with relations - " << relIdsToJoin[i][0] << " : "<< relIdsToJoin[i][1] << endl;
+    cout << "\n\n---- Running Query no: " << i << " with relations - " << relIdsToJoin[i][0] << " : "<< relIdsToJoin[i][1] << endl;
     relR = relArray[relIdsToJoin[i][0]];
     relS = relArray[relIdsToJoin[i][1]];
 
