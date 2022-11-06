@@ -1,16 +1,16 @@
 # Partitioned-Hash-Join
 
 ### How to compile and execute:
-cd main__
-chmod +x compile_execute__
-./compile_execute <ονομα φακελου εισόδου> π.χ. ./compile_execute ./Tests__
+cd main\
+chmod +x compile_execute\
+./compile_execute <ονομα φακελου εισόδου> π.χ. ./compile_execute ./Tests\
 
-ή__ 
+ή\
 
-cd main__
-make__
-execute with: ./program ./Tests__
-make clean__
+cd main\
+make\
+execute with: ./program ./Tests\
+make clean\
 
 Το πρόγραμμα χωρίζεται σε δύο φάσεις:
 
