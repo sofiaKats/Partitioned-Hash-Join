@@ -1,7 +1,5 @@
 #include "PartitionedHashJoin.h"
 
-#define MAX_PASSES 2
-#define MAX_PARTITIONS 5
 #define L2CACHE 1
 
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
@@ -11,18 +9,14 @@ PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
 
 void PartitionedHashJoin::Solve(){
   Part* partitionedR = new Part();
-  partitionedR->rel = new Relation(relR->num_tuples);
-  partitionedR->prefixSum = new PrefixSum(pow(2, MAX_PARTITIONS) + 1);
-  PartitionRec(partitionedR, relR);
+  int passCount = PartitionRec(partitionedR, relR);
   //ONLY FOR RELATION R
   BuildHashtables(partitionedR);
 
   Part* partitionedS = new Part();
-  partitionedS->rel = new Relation(relS->num_tuples);
-  partitionedS->prefixSum = new PrefixSum(pow(2,MAX_PARTITIONS) + 1);
-  PartitionRec(partitionedS, relS);
+  PartitionRec(partitionedS, relS, passCount);
 
-  //PrintPart(partitionedR, true);
+  PrintPart(partitionedR, true);
   //PrintPart(partitionedS, false);
 
   Join(partitionedR, partitionedS);
@@ -31,17 +25,23 @@ void PartitionedHashJoin::Solve(){
   delete partitionedS;
 }
 
- void PartitionedHashJoin::Merge(Part* destPart, Part* part, int from){
+ void PartitionedHashJoin::Merge(Part* destPart, Part* part, int from, int n){
    int partIndex = 0;
    int index = 0;
    int base = 0;
 
    //Merge Relation table
+   if (destPart->rel == NULL){
+     destPart->rel = new Relation(relR->num_tuples);
+   }
    for (int i = from; i < from + part->rel->num_tuples; i++){
      destPart->rel->tuples[i] = part->rel->tuples[partIndex++];
    }
 
    //Merge PrefixSum table
+   if (destPart->prefixSum == NULL){
+     destPart->prefixSum = new PrefixSum(pow(2, n) + 1);
+   }
    for (index = 1; destPart->prefixSum->arr[index][1] != 0; index++);
    if (index == 1) index = 0; // if second element's start index is 0 then first is as well.
    else{ //get end position of previous prefix sum table to continue from
@@ -57,9 +57,10 @@ void PartitionedHashJoin::Solve(){
 
 }
 
-void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, int passNum, int from, int to){
+int PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int maxPasses, int n, int passNum, int from, int to){
   passNum++;
   n++;
+  int passCount = 0;
 
   cout << "\n------- PASS NO: " << passNum << " -------\n\n";
 
@@ -67,23 +68,25 @@ void PartitionedHashJoin::PartitionRec(Part* finalPart, Relation* rel, int n, in
 
   Part* part = partition->BuildPartitionedTable();
 
-  if (passNum == MAX_PASSES || partition->GetLargestTableSize() < L2CACHE){
+  if (passNum == maxPasses || partition->GetLargestTableSize() < L2CACHE){
     //Merge Relation and PrefixSum table to finalPart tables
-    Merge(finalPart, part, from);
+    Merge(finalPart, part, from, n);
     delete partition;
     delete part;
-    return;
+    return passNum;
   }
 
   for (int i = 0; i < part->prefixSum->length - 1; i++){
     from = part->prefixSum->arr[i][1];
     to = part->prefixSum->arr[i+1][1];
 
-    PartitionRec(finalPart, part->rel, n, passNum, from, to);
+    passCount = PartitionRec(finalPart, part->rel, maxPasses, n, passNum, from, to);
   }
 
   delete partition;
   delete part;
+
+  return passCount;
 }
 
 void PartitionedHashJoin::BuildHashtables(Part* part){
@@ -204,7 +207,7 @@ void PartitionedHashJoin::PrintRelation(Relation* rel){
 void PartitionedHashJoin::PrintPrefix(PrefixSum* prefixSum){
   cout << "\n----- PrefixSum Table -----\n";
   for (int i = 0 ; i < prefixSum->length; i++){
-    if (prefixSum->arr[i+1][1] == 0){
+    if (prefixSum->arr[i][0] == -1){
       cout << prefixSum->arr[i][0] << " : " << prefixSum->arr[i][1] << endl;
       break;
     }
