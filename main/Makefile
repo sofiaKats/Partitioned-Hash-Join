@@ -8,4 +8,4 @@ $(EXEC): $(OBJS)
 run:
 	./$(EXEC)
 clean:
-	rm -rf ./$(EXEC) *.o
+	rm -rf ./$(EXEC) *.o ../partition-phase/*.o ../hopscotch/src/*.o
