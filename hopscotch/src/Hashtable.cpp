@@ -126,7 +126,7 @@ void Hashtable::remove_value(int pos, int hash_value ){
 
 
 void Hashtable::resize(){
-    cout << "start resize " << endl;
+    //cout << "start resize " << endl;
     Index** hashtable_old = hashtable;
     int table_size_old = table_size;
 
@@ -238,7 +238,7 @@ int Hashtable::findSwapNeighbourPos(int emptyPos){
         posLeftToCheckBitmaps--;
     }
     if (!changed) {
-        cout << "No element y, table need rehashing!" << endl;
+        //cout << "No element y, table need rehashing!" << endl;
         return -1;
     }
     return emptyPos;
