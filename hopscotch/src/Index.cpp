@@ -10,7 +10,6 @@ Index::Index(int H) : has_value(false)
     // initializing bitmap with 0s
     for (int i=0; i<H; i++) bitmap[i] = 0;
     this->H = H;
-    //tuple = new Tuple();
 }
 
 Index::~Index()
