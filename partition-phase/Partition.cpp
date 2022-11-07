@@ -53,7 +53,7 @@ Hist* Partition::CreateHistogram(){
     if (hist->arr[i] == 0) continue;
     hist->usedLength++;
     if (hist->arr[i] > largestTableSize)
-      largestTableSize = hist->arr[i];
+      largestTableSize = hist->arr[i] * sizeof(Tuple);
     cout << i << " : " << hist->arr[i]<<endl;
   }
 

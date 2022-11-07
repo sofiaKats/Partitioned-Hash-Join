@@ -1,6 +1,6 @@
 #include "PartitionedHashJoin.h"
 
-#define L2CACHE 1
+#define L2CACHE 256000
 
 PartitionedHashJoin::PartitionedHashJoin(Relation* relR, Relation* relS){
   this->relR = relR;
